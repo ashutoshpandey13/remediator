@@ -1,0 +1,21 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "0.70.0"
+  },
+  "ReportID": "019e2b98-fb7a-76d9-bd18-5b64cb6820b9",
+  "CreatedAt": "2026-05-15T17:55:06.682453+05:30",
+  "ArtifactName": "fixed/deployment.yaml",
+  "ArtifactType": "filesystem",
+  "Results": [
+    {
+      "Target": "deployment.yaml",
+      "Class": "config",
+      "Type": "kubernetes",
+      "MisconfSummary": {
+        "Successes": 98,
+        "Failures": 0
+      }
+    }
+  ]
+}

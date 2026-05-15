@@ -1,0 +1,8 @@
+{
+  "name": "vulnerable-node-app",
+  "version": "1.0.0",
+  "dependencies": {
+    "express": "4.20.0",
+    "lodash": "4.18.0"
+  }
+}
