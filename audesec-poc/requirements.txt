@@ -1,6 +1,12 @@
-langgraph
-langchain
-openai
-pyyaml
-python-dotenv
-rich
+# Core dependencies
+openai>=1.0.0
+python-dotenv>=1.0.0
+rich>=13.0.0
+pyyaml>=6.0.0
+
+# JIRA integration (optional)
+jira>=3.5.0
+
+# LangGraph/LangChain (if needed for future enhancements)
+# langgraph
+# langchain
