@@ -49,6 +49,9 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy .env file first (if it exists)
+COPY .env* ./
+
 # Copy application code
 COPY . .
 
@@ -61,14 +64,6 @@ RUN chmod +x start_web_ui.sh || true
 # Create non-root user (but don't switch to it by default for Docker socket access)
 RUN useradd -m -u 1000 audesec && \
     chown -R audesec:audesec /app
-
-# USER audesec
-ENV OPENAI_API_KEY= "" \
-    GITHUB_TOKEN= "" \
-    JIRA_URL= ""  \
-    JIRA_EMAIL= ""  \
-    JIRA_API_TOKEN= "" \
-    JIRA_PROJECT= ""
 
 # Expose port
 EXPOSE 8000

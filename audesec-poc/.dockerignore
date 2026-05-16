@@ -59,10 +59,10 @@ test_*.py
 *.log
 logs/
 
-# Environment files
-.env
-.env.local
-.env.*.local
+# Environment files (commented out to allow .env in container)
+# .env
+# .env.local
+# .env.*.local
 
 # Temporary files
 tmp/
