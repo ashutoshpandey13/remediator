@@ -365,5 +365,3 @@ This PR was automatically generated. Please review carefully before merging.
 """
     
     return body
-
-# Made with Bob

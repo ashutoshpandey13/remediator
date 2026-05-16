@@ -171,6 +171,3 @@ def get_repository_config(repo_url: str) -> dict:
         "branch": branch,
         "image_name": image_name
     }
-
-
-# Made with Bob

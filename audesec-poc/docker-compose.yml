@@ -40,5 +40,3 @@ networks:
 volumes:
   reports:
   fixed:
-
-# Made with Bob

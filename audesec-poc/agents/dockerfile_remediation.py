@@ -196,5 +196,3 @@ def update_dockerfile(dockerfile_path: str, cve_findings: list) -> bool:
     except Exception as e:
         print(f"Error updating Dockerfile: {e}")
         return False
-
-# Made with Bob

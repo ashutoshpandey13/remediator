@@ -243,5 +243,3 @@ function resetForm() {
     startScanBtn.querySelector('.btn-text').textContent = 'Start Scan';
     startScanBtn.querySelector('.btn-loader').style.display = 'none';
 }
-
-// Made with Bob

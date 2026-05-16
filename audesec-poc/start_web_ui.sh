@@ -55,5 +55,3 @@ echo ""
 
 # Start the web application
 python web_app.py
-
-# Made with Bob
