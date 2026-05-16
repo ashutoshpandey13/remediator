@@ -4,6 +4,13 @@ An intelligent security remediation system that automatically scans, detects, fi
 
 ## 🚀 New Features
 
+### 🌐 Web UI (NEW!)
+- **User-friendly web interface** - No command line needed!
+- **Real-time progress updates** via WebSocket
+- **Visual metrics dashboard** showing security improvements
+- **Step-by-step workflow visualization**
+- **Responsive design** - Works on desktop and mobile
+
 ### Git Repository Integration
 - **Clone any Git repository** for security scanning
 - **Automatic PR creation** with remediated code
@@ -101,7 +108,31 @@ gh auth login
 
 ## 🎯 Usage
 
-### Basic Usage (Interactive)
+### Option 1: Web UI (Recommended) 🌐
+
+Start the web interface for an easy-to-use experience:
+
+```bash
+# Quick start
+./start_web_ui.sh
+
+# Or manually
+python web_app.py
+```
+
+Then open your browser to: **http://localhost:5000**
+
+**Features:**
+- 🎨 Beautiful, intuitive interface
+- 📊 Real-time progress updates
+- 📈 Visual metrics dashboard
+- 📱 Mobile-friendly design
+
+See [WEB_UI_GUIDE.md](WEB_UI_GUIDE.md) for detailed documentation.
+
+### Option 2: Command Line Interface
+
+#### Basic Usage (Interactive)
 
 ```bash
 python app.py
@@ -109,7 +140,7 @@ python app.py
 
 The system will prompt you for the Git repository URL.
 
-### Using Environment Variables
+#### Using Environment Variables
 
 ```bash
 # Set repository URL
@@ -119,7 +150,7 @@ export REPO_URL=https://github.com/your-org/your-repo.git
 python app.py
 ```
 
-### Custom File Paths
+#### Custom File Paths
 
 If your repository has non-standard file locations:
 

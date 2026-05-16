@@ -36,6 +36,23 @@ def clone_repository(repo_url: str, target_dir: str = "cloned_repo") -> str:
     
     return os.path.abspath(target_dir)
 
+def cleanup_cloned_repo(target_dir: str = "cloned_repo"):
+    """
+    Clean up the cloned repository directory.
+    
+    Args:
+        target_dir: Directory to remove
+    """
+    import shutil
+    
+    if os.path.exists(target_dir):
+        try:
+            shutil.rmtree(target_dir)
+            print(f"✓ Cleaned up {target_dir}")
+        except Exception as e:
+            print(f"Warning: Could not clean up {target_dir}: {e}")
+
+
 
 def create_branch(repo_path: str, branch_name: str = "security-remediation"):
     """

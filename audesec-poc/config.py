@@ -137,4 +137,40 @@ def find_files_in_repo(repo_path: str, config: RepoConfig) -> dict:
     
     return files
 
+
+def get_repository_config(repo_url: str) -> dict:
+    """
+    Get repository configuration for web UI.
+    
+    Args:
+        repo_url: Git repository URL
+        
+    Returns:
+        Dictionary with configuration details
+    """
+    # Extract repo name from URL
+    repo_name = repo_url.rstrip('/').split('/')[-1].replace('.git', '')
+    
+    # Get optional paths from environment
+    deployment_file = os.getenv("DEPLOYMENT_YAML_PATH", "deployment.yaml")
+    package_json_file = os.getenv("PACKAGE_JSON_PATH", "package.json")
+    dockerfile = os.getenv("DOCKERFILE_PATH", "Dockerfile")
+    
+    # Generate unique branch name
+    branch = generate_unique_branch_name()
+    
+    # Generate image name
+    image_name = f"{repo_name}-scan"
+    
+    return {
+        "repo_url": repo_url,
+        "repo_name": repo_name,
+        "deployment_file": deployment_file,
+        "package_json_file": package_json_file,
+        "dockerfile": dockerfile,
+        "branch": branch,
+        "image_name": image_name
+    }
+
+
 # Made with Bob

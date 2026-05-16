@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AudeSec - Security Remediation Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛡️ AudeSec Security Remediation</h1>
+            <p class="subtitle">⚔️ AI-Powered Security Scanning & Automated Remediation 🔒</p>
+            <div style="margin-top: 20px; font-size: 2rem; opacity: 0.7;">
+                🛡️ 🗡️ 🔐 ⚡ 🔒 🛡️
+            </div>
+        </header>
+
+        <div class="scan-form-container">
+            <div class="form-card">
+                <h2>Start Security Scan</h2>
+                <form id="scanForm">
+                    <div class="form-group">
+                        <label for="repoUrl">Git Repository URL</label>
+                        <input 
+                            type="text" 
+                            id="repoUrl" 
+                            name="repoUrl" 
+                            placeholder="https://github.com/username/repository.git"
+                            required
+                        >
+                        <small>Enter the HTTPS URL of your Git repository</small>
+                    </div>
+                    <button type="submit" id="startScanBtn" class="btn btn-primary">
+                        <span class="btn-text">Start Scan</span>
+                        <span class="btn-loader" style="display: none;">⏳</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="scanProgress" class="scan-progress" style="display: none;">
+            <div class="progress-header">
+                <h2>Scan Progress</h2>
+                <div class="scan-id">Scan ID: <span id="currentScanId"></span></div>
+            </div>
+
+            <div class="steps-container">
+                <div class="step" data-step="0">
+                    <div class="step-icon">🧹</div>
+                    <div class="step-content">
+                        <div class="step-title">Cleanup</div>
+                        <div class="step-message">Preparing environment...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+
+                <div class="step" data-step="1">
+                    <div class="step-icon">⚙️</div>
+                    <div class="step-content">
+                        <div class="step-title">Configuration</div>
+                        <div class="step-message">Loading repository configuration...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+
+                <div class="step" data-step="2">
+                    <div class="step-icon">📥</div>
+                    <div class="step-content">
+                        <div class="step-title">Clone Repository</div>
+                        <div class="step-message">Cloning repository...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+
+                <div class="step" data-step="3">
+                    <div class="step-icon">🔍</div>
+                    <div class="step-content">
+                        <div class="step-title">File Discovery</div>
+                        <div class="step-message">Discovering files...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+
+                <div class="step" data-step="4">
+                    <div class="step-icon">☸️</div>
+                    <div class="step-content">
+                        <div class="step-title">Kubernetes Scan</div>
+                        <div class="step-message">Scanning Kubernetes configurations...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+
+                <div class="step" data-step="5">
+                    <div class="step-icon">🐳</div>
+                    <div class="step-content">
+                        <div class="step-title">Container Scan</div>
+                        <div class="step-message">Building and scanning container image...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+
+                <div class="step" data-step="6">
+                    <div class="step-icon">📊</div>
+                    <div class="step-content">
+                        <div class="step-title">Combine Findings</div>
+                        <div class="step-message">Analyzing security findings...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+
+                <div class="step" data-step="7">
+                    <div class="step-icon">🎫</div>
+                    <div class="step-content">
+                        <div class="step-title">JIRA Tickets</div>
+                        <div class="step-message">Creating tracking tickets...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+
+                <div class="step" data-step="8">
+                    <div class="step-icon">🤖</div>
+                    <div class="step-content">
+                        <div class="step-title">AI Remediation</div>
+                        <div class="step-message">Generating fixes with AI...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+
+                <div class="step" data-step="9">
+                    <div class="step-icon">✏️</div>
+                    <div class="step-content">
+                        <div class="step-title">Apply Fixes</div>
+                        <div class="step-message">Applying security fixes...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+
+                <div class="step" data-step="10">
+                    <div class="step-icon">✅</div>
+                    <div class="step-content">
+                        <div class="step-title">Validation</div>
+                        <div class="step-message">Validating fixed files...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+
+                <div class="step" data-step="11">
+                    <div class="step-icon">🔧</div>
+                    <div class="step-content">
+                        <div class="step-title">Dockerfile Update</div>
+                        <div class="step-message">Updating Dockerfile...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+
+                <div class="step" data-step="12">
+                    <div class="step-icon">🔨</div>
+                    <div class="step-content">
+                        <div class="step-title">Rebuild Container</div>
+                        <div class="step-message">Rebuilding container image...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+
+                <div class="step" data-step="13">
+                    <div class="step-icon">🔄</div>
+                    <div class="step-content">
+                        <div class="step-title">Re-scan</div>
+                        <div class="step-message">Re-scanning fixed assets...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+
+                <div class="step" data-step="14">
+                    <div class="step-icon">📈</div>
+                    <div class="step-content">
+                        <div class="step-title">Metrics</div>
+                        <div class="step-message">Calculating improvement metrics...</div>
+                    </div>
+                    <div class="step-status">⏳</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="scanResults" class="scan-results" style="display: none;">
+            <h2>📊 Security Improvement Summary</h2>
+            
+            <div class="metrics-grid">
+                <div class="metric-card total">
+                    <div class="metric-header">
+                        <h3>Total Issues</h3>
+                        <div class="metric-icon">🎯</div>
+                    </div>
+                    <div class="metric-body">
+                        <div class="metric-comparison">
+                            <div class="metric-before">
+                                <span class="label">Before</span>
+                                <span class="value" id="totalBefore">0</span>
+                            </div>
+                            <div class="metric-arrow">→</div>
+                            <div class="metric-after">
+                                <span class="label">After</span>
+                                <span class="value" id="totalAfter">0</span>
+                            </div>
+                        </div>
+                        <div class="metric-improvement">
+                            <span class="improvement-label">Fixed:</span>
+                            <span class="improvement-value" id="totalFixed">0</span>
+                            <span class="improvement-percent" id="totalPercent">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card k8s">
+                    <div class="metric-header">
+                        <h3>Kubernetes Issues</h3>
+                        <div class="metric-icon">☸️</div>
+                    </div>
+                    <div class="metric-body">
+                        <div class="metric-comparison">
+                            <div class="metric-before">
+                                <span class="label">Before</span>
+                                <span class="value" id="k8sBefore">0</span>
+                            </div>
+                            <div class="metric-arrow">→</div>
+                            <div class="metric-after">
+                                <span class="label">After</span>
+                                <span class="value" id="k8sAfter">0</span>
+                            </div>
+                        </div>
+                        <div class="metric-improvement">
+                            <span class="improvement-label">Fixed:</span>
+                            <span class="improvement-value" id="k8sFixed">0</span>
+                            <span class="improvement-percent" id="k8sPercent">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card cve">
+                    <div class="metric-header">
+                        <h3>CVE Vulnerabilities</h3>
+                        <div class="metric-icon">🔒</div>
+                    </div>
+                    <div class="metric-body">
+                        <div class="metric-comparison">
+                            <div class="metric-before">
+                                <span class="label">Before</span>
+                                <span class="value" id="cveBefore">0</span>
+                            </div>
+                            <div class="metric-arrow">→</div>
+                            <div class="metric-after">
+                                <span class="label">After</span>
+                                <span class="value" id="cveAfter">0</span>
+                            </div>
+                        </div>
+                        <div class="metric-improvement">
+                            <span class="improvement-label">Fixed:</span>
+                            <span class="improvement-value" id="cveFixed">0</span>
+                            <span class="improvement-percent" id="cvePercent">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="location.reload()">Start New Scan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inline minimal Socket.IO client -->
+    <script>
+    // Minimal Socket.IO client implementation
+    window.io = function() {
+        return {
+            on: function(event, callback) {
+                console.log('Socket event registered:', event);
+                // Store callbacks for later use
+                if (!this._callbacks) this._callbacks = {};
+                if (!this._callbacks[event]) this._callbacks[event] = [];
+                this._callbacks[event].push(callback);
+            },
+            emit: function(event, data) {
+                console.log('Socket emit:', event, data);
+                // Send via fetch for now
+                if (event === 'join_scan') {
+                    fetch('/api/scan/' + data.scan_id)
+                        .then(r => r.json())
+                        .then(result => {
+                            if (this._callbacks && this._callbacks['joined']) {
+                                this._callbacks['joined'].forEach(cb => cb(data));
+                            }
+                        });
+                }
+            },
+            _callbacks: {}
+        };
+    };
+    </script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
