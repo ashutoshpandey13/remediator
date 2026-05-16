@@ -62,9 +62,13 @@ RUN chmod +x start_web_ui.sh || true
 RUN useradd -m -u 1000 audesec && \
     chown -R audesec:audesec /app
 
-# Note: Running as root to access Docker socket
-# For production, use --user flag with proper group permissions
 # USER audesec
+ENV OPENAI_API_KEY= "" \
+    GITHUB_TOKEN= "" \
+    JIRA_URL= ""  \
+    JIRA_EMAIL= ""  \
+    JIRA_API_TOKEN= "" \
+    JIRA_PROJECT= ""
 
 # Expose port
 EXPOSE 8000

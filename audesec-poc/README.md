@@ -38,128 +38,154 @@ AudeSec-POC automates the entire security remediation workflow:
 - Git
 - GitHub CLI (`gh`) - for PR creation
 
-### Install Dependencies
+## 🚀 How to Run
+
+### Using Docker (Recommended)
+
+The simplest way to run AudeSec with all dependencies pre-configured:
 
 ```bash
-# Install Python dependencies
+# 1. Clone the repository
+git clone <your-repo-url>
+cd audesec-poc
+
+# 2. Build the Docker image
+docker build -t audesec-platform .
+
+# 3. Run the container
+docker run -d \
+  --name audesec \
+  -p 8000:8000 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v $(pwd)/reports:/app/reports \
+  -v $(pwd)/fixed:/app/fixed \
+  audesec-platform
+
+# 4. Access the web UI
+# Open browser to: http://localhost:8000
+
+# 5. View logs (optional)
+docker logs -f audesec
+
+# 6. Stop the container (when done)
+docker stop audesec
+docker rm audesec
+```
+
+**That's it!** The application runs with all API keys and dependencies pre-configured in the Docker image.
+
+### Local Development (Without Docker)
+
+For development or if you prefer running without Docker:
+
+```bash
+# 1. Install Python dependencies
 pip install -r requirements.txt
 
-# Install Trivy
-# macOS
-brew install trivy
+# 2. Create .env file
+cp .env.example .env
 
-# Linux
-wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
-sudo apt-get update
-sudo apt-get install trivy
+# 3. Edit .env and add your API keys
+nano .env  # or use your preferred editor
 
-# Install GitHub CLI
-# macOS
-brew install gh
+# 4. Run the web application
+python web_app.py
 
-# Linux
-curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-sudo apt update
-sudo apt install gh
+# 5. Access at: http://localhost:5000
 ```
 
-## ⚙️ Configuration
+## 🎯 How to Use
 
-### Environment Variables
+### Web Interface (Recommended)
 
-Create a `.env` file in the project root:
+1. **Access the application** at `http://localhost:8000`
+2. **Enter repository URL** in the web form
+3. **Click "Start Scan"** to begin the security remediation workflow
+4. **Monitor progress** in real-time through the web interface
+5. **Review results** including:
+   - Security vulnerabilities found
+   - Automated fixes applied
+   - Pull request created with remediation
+   - Before/after security metrics
+
+### Command Line Interface
+
+For automation or scripting:
 
 ```bash
-# Required: OpenAI API Key for AI remediation
-OPENAI_API_KEY=your_openai_api_key
+# Using Docker
+docker exec -it audesec python app.py
 
-# Required: GitHub Token for PR creation
-GITHUB_TOKEN=your_github_personal_access_token
+# Or locally (after activating venv if used)
+python app.py
+```
 
-# Optional: JIRA Integration
+The CLI will prompt you for the repository URL and guide you through the process.
+
+## ⚙️ Configuration (Optional)
+
+The Docker image includes pre-configured environment variables. You only need to customize them if you want to use your own API keys.
+
+### Override Environment Variables (Docker)
+
+Pass custom environment variables when running the container:
+
+```bash
+docker run -d \
+  --name audesec \
+  -p 8000:8000 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v $(pwd)/reports:/app/reports \
+  -v $(pwd)/fixed:/app/fixed \
+  -e OPENAI_API_KEY=your_custom_key \
+  -e GITHUB_TOKEN=your_custom_token \
+  -e JIRA_URL=https://your-domain.atlassian.net \
+  -e JIRA_EMAIL=your-email@example.com \
+  -e JIRA_API_TOKEN=your_jira_token \
+  -e JIRA_PROJECT=YOUR_PROJECT \
+  audesec-platform
+```
+
+### Local Development Configuration
+
+Create a `.env` file with your credentials:
+
+```bash
+# Required
+OPENAI_API_KEY=sk-your-openai-api-key
+GITHUB_TOKEN=ghp_your-github-token
+
+# Optional (for JIRA integration)
 JIRA_URL=https://your-domain.atlassian.net
 JIRA_EMAIL=your-email@example.com
-JIRA_API_TOKEN=your_jira_api_token
-JIRA_PROJECT=PROJECT_KEY
-
-# Optional: Repository Configuration
-REPO_URL=https://github.com/owner/repo.git
-DEPLOYMENT_YAML_PATH=deployment.yaml
-PACKAGE_JSON_PATH=package.json
-DOCKERFILE_PATH=Dockerfile
-BRANCH_NAME=security-remediation
+JIRA_API_TOKEN=your-jira-token
+JIRA_PROJECT=PROJ
 ```
 
-### GitHub Token Setup
-
-1. Go to GitHub Settings → Developer settings → Personal access tokens
-2. Generate new token with these scopes:
-   - `repo` (Full control of private repositories)
-   - `workflow` (Update GitHub Action workflows)
-3. Copy token to `.env` file
-
-### Authenticate GitHub CLI
+## 🐳 Docker Management Commands
 
 ```bash
-gh auth login
-```
+# View logs
+docker logs -f audesec
 
-## 🎯 Usage
+# Stop container
+docker stop audesec
 
-### Option 1: Web UI (Recommended) 🌐
+# Start stopped container
+docker start audesec
 
-Start the web interface for an easy-to-use experience:
+# Restart container
+docker restart audesec
 
-```bash
-# Quick start
-./start_web_ui.sh
+# Remove container
+docker rm audesec
 
-# Or manually
-python web_app.py
-```
+# Remove container and image
+docker rm -f audesec
+docker rmi audesec-platform
 
-Then open your browser to: **http://localhost:5000**
-
-**Features:**
-- 🎨 Beautiful, intuitive interface
-- 📊 Real-time progress updates
-- 📈 Visual metrics dashboard
-- 📱 Mobile-friendly design
-
-See [WEB_UI_GUIDE.md](WEB_UI_GUIDE.md) for detailed documentation.
-
-### Option 2: Command Line Interface
-
-#### Basic Usage (Interactive)
-
-```bash
-python app.py
-```
-
-The system will prompt you for the Git repository URL.
-
-#### Using Environment Variables
-
-```bash
-# Set repository URL
-export REPO_URL=https://github.com/your-org/your-repo.git
-
-# Run the scanner
-python app.py
-```
-
-#### Custom File Paths
-
-If your repository has non-standard file locations:
-
-```bash
-export DEPLOYMENT_YAML_PATH=k8s/production/deployment.yaml
-export PACKAGE_JSON_PATH=backend/package.json
-export DOCKERFILE_PATH=docker/Dockerfile
-
-python app.py
+# Execute commands inside container
+docker exec -it audesec bash
 ```
 
 ## 📊 Workflow Steps
@@ -282,30 +308,103 @@ audesec-poc/
 
 ## 🐛 Troubleshooting
 
-### "Git clone failed"
+### Container Won't Start
+
+```bash
+# Check logs
+docker logs audesec
+
+# Common issues:
+# 1. Port 8000 already in use
+sudo lsof -i :8000
+# Kill the process or use a different port: -p 9000:8000
+
+# 2. Docker daemon not running
+docker info
+# Start Docker Desktop or Docker daemon
+
+# 3. Permission denied on Docker socket
+sudo chmod 666 /var/run/docker.sock
+```
+
+### Can't Access Web UI
+
+```bash
+# Verify container is running
+docker ps | grep audesec
+
+# Check container health
+docker inspect --format='{{.State.Health.Status}}' audesec
+
+# Test connection
+curl http://localhost:8000
+
+# If using different port, adjust URL accordingly
+```
+
+### "Git clone failed" in Application
+
 - Check repository URL is correct
 - Verify you have access to the repository
-- For private repos, ensure SSH key or token is configured
+- For private repos, ensure GitHub token has proper permissions
+- Check container logs: `docker logs audesec`
 
-### "PR creation failed"
-- Verify `GITHUB_TOKEN` is set and valid
-- Check token has `repo` scope
-- Ensure GitHub CLI is authenticated: `gh auth status`
+### "Docker build failed" Inside Container
 
-### "Docker build failed"
-- Verify Dockerfile exists and is valid
-- Check Docker daemon is running
-- Ensure all build dependencies are available
+```bash
+# Verify Docker socket is mounted
+docker exec audesec ls -la /var/run/docker.sock
+
+# Test Docker access from inside container
+docker exec audesec docker ps
+
+# If permission denied, check Docker socket permissions on host
+ls -la /var/run/docker.sock
+```
 
 ### "Trivy scan failed"
-- Update Trivy: `trivy --version` and upgrade if needed
-- Check internet connectivity (Trivy downloads vulnerability DB)
-- Verify file paths are correct
 
-### "OpenAI API error"
-- Check `OPENAI_API_KEY` is valid
-- Verify you have API credits
-- Check rate limits
+```bash
+# Update Trivy database inside container
+docker exec audesec trivy image --download-db-only
+
+# Check Trivy version
+docker exec audesec trivy --version
+
+# Verify internet connectivity from container
+docker exec audesec ping -c 3 google.com
+```
+
+### Out of Memory or Slow Performance
+
+```bash
+# Check container resource usage
+docker stats audesec
+
+# Restart container with more resources
+docker stop audesec
+docker rm audesec
+docker run -d \
+  --name audesec \
+  -p 8000:8000 \
+  --memory="4g" \
+  --cpus="2.0" \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  audesec-platform
+```
+
+### View Detailed Logs
+
+```bash
+# Real-time logs
+docker logs -f audesec
+
+# Last 100 lines
+docker logs --tail 100 audesec
+
+# Logs with timestamps
+docker logs -t audesec
+```
 
 ## 📈 Example Output
 
