@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  audesec-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: audesec-security-platform
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - JIRA_URL=${JIRA_URL:-}
+      - JIRA_EMAIL=${JIRA_EMAIL:-}
+      - JIRA_API_TOKEN=${JIRA_API_TOKEN:-}
+      - JIRA_PROJECT=${JIRA_PROJECT:-SEC}
+    volumes:
+      # Mount Docker socket to allow container builds
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Mount reports directory for persistence
+      - ./reports:/app/reports
+      # Mount fixed directory for persistence
+      - ./fixed:/app/fixed
+    restart: unless-stopped
+    networks:
+      - audesec-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  audesec-network:
+    driver: bridge
+
+volumes:
+  reports:
+  fixed:
+
+# Made with Bob

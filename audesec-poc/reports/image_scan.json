@@ -3,38 +3,38 @@
   "Trivy": {
     "Version": "0.70.0"
   },
-  "ReportID": "019e3090-ca35-79bc-ae27-596e386c3dba",
-  "CreatedAt": "2026-05-16T17:04:15.861639+05:30",
-  "ArtifactID": "sha256:2cb8b74e64f7f3e2cba5ef8dfc1d58a5f5ee37e2e190dc32c05f70a887599ae8",
+  "ReportID": "019e30c1-9232-7029-af49-17f9b3cd0d6a",
+  "CreatedAt": "2026-05-16T12:27:32.786011255Z",
+  "ArtifactID": "sha256:7790f8623dad8f72d6be95a8becc0a30b8f4e98e088b65e715f1d537a7c5927a",
   "ArtifactName": "vulnerable-app-scan-fixed",
   "ArtifactType": "container_image",
   "Metadata": {
-    "Size": 150660096,
+    "Size": 150658560,
     "OS": {
       "Family": "alpine",
       "Name": "3.23.4"
     },
-    "ImageID": "sha256:798fa6d628fa514f530c4c0a925f867ae15b904281ddd5a4f39a7a5021909fcc",
+    "ImageID": "sha256:1ece02374ed1eea3fb4ac9f94cca33371938d08865c73e77fcebcda0c6b14bdd",
     "DiffIDs": [
       "sha256:a8d26d037006414043b277ecb95287692d0960219289d9e27b0bcea0ce233b02",
       "sha256:21e4f00ae03f714ca184b962b542ebb67dc73b5c2f7200659becdef9bdfe320e",
       "sha256:d71b9385f08ff45e2ffd832dfd8ce8edb39dbe4e0775cf14d142aeecf3350a2d",
       "sha256:624111e2a83c228bf01f932df89fcff9f9a2b04284fe99114345b3715118740e",
-      "sha256:d7825b8103a3115257243915a4e4a0afadc0c6fc870c9f0388ee82e9f3a90abf",
-      "sha256:68ba0ba5b6d6033bb580a6b8c7aefa5691e15a2dc8de1514f61413e77c218940",
-      "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c",
-      "sha256:f64a8379c339b18c0fd2bc36db966c119c30b7001411b051547202e2d8b62d33"
+      "sha256:ab233b528a0c1165d00dcfb0f4ed5937d314c3a1e705a66ffcae07637c5cafa2",
+      "sha256:efdf8d906997ae06e7746ec92105d785b10c3ad9fd7a03b740be4bf2548443e5",
+      "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f",
+      "sha256:700e1e00aed484486f937d2e11f273e97f3b0c1dffe6f74a4692c594c9592d5d"
     ],
     "RepoTags": [
       "vulnerable-app-scan-fixed:latest"
     ],
     "RepoDigests": [
-      "vulnerable-app-scan-fixed@sha256:798fa6d628fa514f530c4c0a925f867ae15b904281ddd5a4f39a7a5021909fcc"
+      "vulnerable-app-scan-fixed@sha256:1ece02374ed1eea3fb4ac9f94cca33371938d08865c73e77fcebcda0c6b14bdd"
     ],
     "Reference": "vulnerable-app-scan-fixed:latest",
     "ImageConfig": {
       "architecture": "arm64",
-      "created": "2026-05-16T11:34:15.264214167Z",
+      "created": "2026-05-16T12:27:31.674308546Z",
       "history": [
         {
           "created": "2026-04-15T20:01:25Z",
@@ -87,35 +87,29 @@
           "empty_layer": true
         },
         {
-          "created": "2026-05-16T07:41:03Z",
-          "created_by": "WORKDIR /app",
-          "comment": "buildkit.dockerfile.v0"
+          "created": "2026-05-16T12:19:32Z",
+          "created_by": "/bin/sh -c #(nop) WORKDIR /app"
         },
         {
-          "created": "2026-05-16T07:41:04Z",
-          "created_by": "COPY package.json . # buildkit",
-          "comment": "buildkit.dockerfile.v0"
+          "created": "2026-05-16T12:27:29Z",
+          "created_by": "/bin/sh -c #(nop) COPY file:f62542b56a451733e2dae85d9a1a07b3f255673978305f8e38131e54771e8597 in . "
         },
         {
-          "created": "2026-05-16T07:41:05Z",
-          "created_by": "RUN /bin/sh -c npm install # buildkit",
-          "comment": "buildkit.dockerfile.v0"
+          "created": "2026-05-16T12:27:31Z",
+          "created_by": "/bin/sh -c npm install"
         },
         {
-          "created": "2026-05-16T11:34:15Z",
-          "created_by": "COPY . . # buildkit",
-          "comment": "buildkit.dockerfile.v0"
+          "created": "2026-05-16T12:27:31Z",
+          "created_by": "/bin/sh -c #(nop) COPY dir:c87946f6ccb895cc16956430dd3573e4cb42cfbb65831ea50b09242a37dd38d6 in . "
         },
         {
-          "created": "2026-05-16T11:34:15Z",
-          "created_by": "EXPOSE [3000/tcp]",
-          "comment": "buildkit.dockerfile.v0",
+          "created": "2026-05-16T12:27:31Z",
+          "created_by": "/bin/sh -c #(nop)  EXPOSE 3000",
           "empty_layer": true
         },
         {
-          "created": "2026-05-16T11:34:15Z",
-          "created_by": "CMD [\"node\" \"app.js\"]",
-          "comment": "buildkit.dockerfile.v0",
+          "created": "2026-05-16T12:27:31Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"node\" \"app.js\"]",
           "empty_layer": true
         }
       ],
@@ -127,10 +121,10 @@
           "sha256:21e4f00ae03f714ca184b962b542ebb67dc73b5c2f7200659becdef9bdfe320e",
           "sha256:d71b9385f08ff45e2ffd832dfd8ce8edb39dbe4e0775cf14d142aeecf3350a2d",
           "sha256:624111e2a83c228bf01f932df89fcff9f9a2b04284fe99114345b3715118740e",
-          "sha256:d7825b8103a3115257243915a4e4a0afadc0c6fc870c9f0388ee82e9f3a90abf",
-          "sha256:68ba0ba5b6d6033bb580a6b8c7aefa5691e15a2dc8de1514f61413e77c218940",
-          "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c",
-          "sha256:f64a8379c339b18c0fd2bc36db966c119c30b7001411b051547202e2d8b62d33"
+          "sha256:ab233b528a0c1165d00dcfb0f4ed5937d314c3a1e705a66ffcae07637c5cafa2",
+          "sha256:efdf8d906997ae06e7746ec92105d785b10c3ad9fd7a03b740be4bf2548443e5",
+          "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f",
+          "sha256:700e1e00aed484486f937d2e11f273e97f3b0c1dffe6f74a4692c594c9592d5d"
         ]
       },
       "config": {
@@ -149,8 +143,7 @@
         "WorkingDir": "/app",
         "ExposedPorts": {
           "3000/tcp": {}
-        },
-        "ArgsEscaped": true
+        }
       }
     },
     "Layers": [
@@ -176,23 +169,23 @@
       },
       {
         "Size": 1536,
-        "Digest": "sha256:9409ed62b2f0c7082dcf897c99502fa4b9bae53de5ee567ca3a9efeeb304745c",
-        "DiffID": "sha256:d7825b8103a3115257243915a4e4a0afadc0c6fc870c9f0388ee82e9f3a90abf"
+        "Digest": "sha256:a0722091970155fcc8282c443a47d5cdb6c0e62360bda49de6a4574bc124808f",
+        "DiffID": "sha256:ab233b528a0c1165d00dcfb0f4ed5937d314c3a1e705a66ffcae07637c5cafa2"
       },
       {
         "Size": 2560,
-        "Digest": "sha256:93cda0c0d02bf7c2cde3563b21008cb46b822cf396b33a99ec999b98d647ae35",
-        "DiffID": "sha256:68ba0ba5b6d6033bb580a6b8c7aefa5691e15a2dc8de1514f61413e77c218940"
+        "Digest": "sha256:5ec271e7ffb69cac2ffdae612f662e8910e032721f1f8f41dd8bad7f8b3cb246",
+        "DiffID": "sha256:efdf8d906997ae06e7746ec92105d785b10c3ad9fd7a03b740be4bf2548443e5"
       },
       {
         "Size": 12511744,
-        "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-        "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+        "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+        "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
       },
       {
-        "Size": 79872,
-        "Digest": "sha256:648e189def7b21dd7f095fb8859d0905d4eea6e01ef0f70befffeb95494e3723",
-        "DiffID": "sha256:f64a8379c339b18c0fd2bc36db966c119c30b7001411b051547202e2d8b62d33"
+        "Size": 78336,
+        "Digest": "sha256:58436f67ccb58a8c6287258dd76a871d36ac79b3f988f41f076811a970155fc6",
+        "DiffID": "sha256:700e1e00aed484486f937d2e11f273e97f3b0c1dffe6f74a4692c594c9592d5d"
       }
     ]
   },
@@ -1311,8 +1304,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/accepts/package.json",
           "AnalyzedBy": "node-pkg"
@@ -1491,8 +1484,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/array-flatten/package.json",
           "AnalyzedBy": "node-pkg"
@@ -1563,8 +1556,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/body-parser/package.json",
           "AnalyzedBy": "node-pkg"
@@ -1599,8 +1592,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/bytes/package.json",
           "AnalyzedBy": "node-pkg"
@@ -1635,8 +1628,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/call-bind-apply-helpers/package.json",
           "AnalyzedBy": "node-pkg"
@@ -1653,8 +1646,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/call-bound/package.json",
           "AnalyzedBy": "node-pkg"
@@ -1851,8 +1844,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/content-disposition/package.json",
           "AnalyzedBy": "node-pkg"
@@ -1869,8 +1862,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/content-type/package.json",
           "AnalyzedBy": "node-pkg"
@@ -1887,8 +1880,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/cookie/package.json",
           "AnalyzedBy": "node-pkg"
@@ -1905,8 +1898,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/cookie-signature/package.json",
           "AnalyzedBy": "node-pkg"
@@ -1977,8 +1970,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/debug/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2013,8 +2006,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/depd/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2031,8 +2024,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/destroy/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2067,8 +2060,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/dunder-proto/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2103,8 +2096,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/ee-first/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2175,8 +2168,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/encodeurl/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2247,8 +2240,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/es-define-property/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2265,8 +2258,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/es-errors/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2283,8 +2276,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/es-object-atoms/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2301,8 +2294,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/escape-html/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2319,8 +2312,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/etag/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2355,8 +2348,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/express/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2391,8 +2384,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/finalhandler/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2427,8 +2420,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/forwarded/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2445,8 +2438,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/fresh/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2499,8 +2492,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/function-bind/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2517,8 +2510,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/get-intrinsic/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2535,8 +2528,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/get-proto/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2571,8 +2564,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/gopd/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2607,8 +2600,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/has-symbols/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2625,8 +2618,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/hasown/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2679,8 +2672,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/http-errors/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2733,8 +2726,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/iconv-lite/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2823,8 +2816,8 @@
             "ISC"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/inherits/package.json",
           "AnalyzedBy": "node-pkg"
@@ -2913,8 +2906,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/ipaddr.js/package.json",
           "AnalyzedBy": "node-pkg"
@@ -3345,8 +3338,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/lodash/package.json",
           "AnalyzedBy": "node-pkg"
@@ -3399,8 +3392,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/math-intrinsics/package.json",
           "AnalyzedBy": "node-pkg"
@@ -3417,8 +3410,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/media-typer/package.json",
           "AnalyzedBy": "node-pkg"
@@ -3435,8 +3428,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/merge-descriptors/package.json",
           "AnalyzedBy": "node-pkg"
@@ -3453,8 +3446,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/methods/package.json",
           "AnalyzedBy": "node-pkg"
@@ -3471,8 +3464,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/mime/package.json",
           "AnalyzedBy": "node-pkg"
@@ -3489,8 +3482,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/mime-db/package.json",
           "AnalyzedBy": "node-pkg"
@@ -3507,8 +3500,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/mime-types/package.json",
           "AnalyzedBy": "node-pkg"
@@ -3795,8 +3788,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/ms/package.json",
           "AnalyzedBy": "node-pkg"
@@ -3831,8 +3824,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/send/node_modules/ms/package.json",
           "AnalyzedBy": "node-pkg"
@@ -3885,8 +3878,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/negotiator/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4173,8 +4166,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/object-inspect/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4191,8 +4184,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/on-finished/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4281,8 +4274,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/parseurl/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4335,8 +4328,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/path-to-regexp/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4515,8 +4508,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/proxy-addr/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4548,8 +4541,8 @@
             "BSD-3-Clause"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/qs/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4566,8 +4559,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/range-parser/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4584,8 +4577,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/raw-body/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4674,8 +4667,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/safe-buffer/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4692,8 +4685,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/safer-buffer/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4746,8 +4739,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/send/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4764,8 +4757,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/serve-static/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4782,8 +4775,8 @@
             "ISC"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/setprototypeof/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4836,8 +4829,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/side-channel/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4854,8 +4847,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/side-channel-list/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4872,8 +4865,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/side-channel-map/package.json",
           "AnalyzedBy": "node-pkg"
@@ -4890,8 +4883,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/side-channel-weakmap/package.json",
           "AnalyzedBy": "node-pkg"
@@ -5142,8 +5135,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/statuses/package.json",
           "AnalyzedBy": "node-pkg"
@@ -5376,8 +5369,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/toidentifier/package.json",
           "AnalyzedBy": "node-pkg"
@@ -5430,8 +5423,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/type-is/package.json",
           "AnalyzedBy": "node-pkg"
@@ -5484,8 +5477,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/unpipe/package.json",
           "AnalyzedBy": "node-pkg"
@@ -5520,8 +5513,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/utils-merge/package.json",
           "AnalyzedBy": "node-pkg"
@@ -5574,8 +5567,8 @@
             "MIT"
           ],
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "FilePath": "app/node_modules/vary/package.json",
           "AnalyzedBy": "node-pkg"
@@ -5589,8 +5582,8 @@
           },
           "Version": "1.0.0",
           "Layer": {
-            "Digest": "sha256:93cda0c0d02bf7c2cde3563b21008cb46b822cf396b33a99ec999b98d647ae35",
-            "DiffID": "sha256:68ba0ba5b6d6033bb580a6b8c7aefa5691e15a2dc8de1514f61413e77c218940"
+            "Digest": "sha256:5ec271e7ffb69cac2ffdae612f662e8910e032721f1f8f41dd8bad7f8b3cb246",
+            "DiffID": "sha256:efdf8d906997ae06e7746ec92105d785b10c3ad9fd7a03b740be4bf2548443e5"
           },
           "FilePath": "app/package.json",
           "AnalyzedBy": "node-pkg"
@@ -5757,8 +5750,8 @@
           "FixedVersion": "1.20.3",
           "Status": "fixed",
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-45590",
@@ -5767,7 +5760,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:c0c9c0f5a913f069931a289299c51f164a6ffde0fdd28a9db025499640b986a6",
+          "Fingerprint": "sha256:1ff47d4a9e966d8aa03c7771a2dc0da1d52c9d543da01a4569420fd489595b97",
           "Title": "body-parser: Denial of Service Vulnerability in body-parser",
           "Description": "body-parser is Node.js body parsing middleware. body-parser \u003c1.20.3 is vulnerable to denial of service when url encoding is enabled. A malicious actor using a specially crafted payload could flood the server with a large number of requests, resulting in denial of service. This issue is patched in 1.20.3.",
           "Severity": "HIGH",
@@ -5834,7 +5827,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:62531beac8e7853980a667f2858e3202b3f60f1efa1921bf92bf9a6c118613a3",
+          "Fingerprint": "sha256:9c2afeb46bd3bb06168ac3167904d031e7b49f722011b743a1f1c84b0b8aebf6",
           "Title": "brace-expansion: brace-expansion: Denial of Service via zero step value in brace pattern",
           "Description": "The brace-expansion library generates arbitrary strings containing a common prefix and suffix. Prior to versions 5.0.5, 3.0.2, 2.0.3, and 1.1.13, a brace pattern with a zero step value (e.g., `{1..2..0}`) causes the sequence generation loop to run indefinitely, making the process hang for seconds and allocate heaps of memory. Versions 5.0.5, 3.0.2, 2.0.3, and 1.1.13 fix the issue. As a workaround, sanitize strings passed to `expand()` to ensure a step value of `0` is not used.",
           "Severity": "MEDIUM",
@@ -5905,7 +5898,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:d02b2b0f80d19f0c0fdf0694752c305f084b0a748230e9378c4f013961a704a9",
+          "Fingerprint": "sha256:871a90d84079a3341f971cd13ec042f707100588d62abf878ab9e89425ef7459",
           "Title": "brace-expansion: juliangruber brace-expansion index.js expand redos",
           "Description": "A vulnerability was found in juliangruber brace-expansion up to 1.1.11/2.0.1/3.0.0/4.0.0. It has been rated as problematic. Affected by this issue is the function expand of the file index.js. The manipulation leads to inefficient regular expression complexity. The attack may be launched remotely. The complexity of an attack is rather high. The exploitation is known to be difficult. The exploit has been disclosed to the public and may be used. Upgrading to version 1.1.12, 2.0.2, 3.0.1 and 4.0.1 is able to address this issue. The name of the patch is a5b98a4f30d7813266b221435e1eaaf25a1b0ac5. It is recommended to upgrade the affected component.",
           "Severity": "LOW",
@@ -5966,8 +5959,8 @@
           "FixedVersion": "0.7.0",
           "Status": "fixed",
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-47764",
@@ -5976,7 +5969,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:31d3e501faf197f40f7d40ad157d8766089d14f777a0b50cce0f00f0860a086b",
+          "Fingerprint": "sha256:f45ca5d2224a9c14c48cdd2ce9e6e0f41f605ccdea015728fbc438fc7fec9878",
           "Title": "cookie: cookie accepts cookie name, path, and domain with out of bounds characters",
           "Description": "cookie is a basic HTTP cookie parser and serializer for HTTP servers. The cookie name could be used to set other fields of the cookie, resulting in an unexpected cookie value. A similar escape can be used for path and domain, which could be abused to alter other fields of the cookie. Upgrade to 0.7.0, which updates the validation for name, path, and domain.",
           "Severity": "LOW",
@@ -6032,7 +6025,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:2e7cff76ff23330004a92f82b8ad48e8c474d2dd06840d267e8c9d28fb3877e2",
+          "Fingerprint": "sha256:8b0dc8093d9ffdf87924227ef437799895b5337dd1f812843f709073490985b5",
           "Title": "cross-spawn: regular expression denial of service",
           "Description": "Versions of the package cross-spawn before 6.0.6, from 7.0.0 and before 7.0.5 are vulnerable to Regular Expression Denial of Service (ReDoS) due to improper input sanitization. An attacker can increase the CPU usage and crash the program by crafting a very large and well crafted string.",
           "Severity": "HIGH",
@@ -6100,7 +6093,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:272228a4a4f91c584a4a4b0262929d449ede67f7338b0f72d2f019805ba715ed",
+          "Fingerprint": "sha256:fdfbbb22411981f6100ee35365705ba40c94b6d6d5a10b1c8ef7a167102768ce",
           "Title": "jsdiff: denial of service vulnerability in parsePatch and applyPatch",
           "Description": "jsdiff is a JavaScript text differencing implementation. Prior to versions 8.0.3, 5.2.2, 4.0.4, and 3.5.1, attempting to parse a patch whose filename headers contain the line break characters `\\r`, `\\u2028`, or `\\u2029` can cause the `parsePatch` method to enter an infinite loop. It then consumes memory without limit until the process crashes due to running out of memory. Applications are therefore likely to be vulnerable to a denial-of-service attack if they call `parsePatch` with a user-provided patch as input. A large payload is not needed to trigger the vulnerability, so size limits on user input do not provide any protection. Furthermore, some applications may be vulnerable even when calling `parsePatch` on a patch generated by the application itself if the user is nonetheless able to control the filename headers (e.g. by directly providing the filenames of the files to be diffed). The `applyPatch` method is similarly affected if (and only if) called with a string representation of a patch as an argument, since under the hood it parses that string using `parsePatch`. Other methods of the library are unaffected. Finally, a second and lesser interdependent bug - a ReDOS - also exhibits when those same line break characters are present in a patch's *patch* header (also known as its \"leading garbage\"). A maliciously-crafted patch header of length *n* can take `parsePatch` O(*n*³) time to parse. Versions 8.0.3, 5.2.2, 4.0.4, and 3.5.1 contain a fix. As a workaround, do not attempt to parse patches that contain any of these characters: `\\r`, `\\u2028`, or `\\u2029`.",
           "Severity": "LOW",
@@ -6156,8 +6149,8 @@
           "FixedVersion": "4.20.0, 5.0.0",
           "Status": "fixed",
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-43796",
@@ -6166,7 +6159,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:cf9b13678ea544a60e8bd52dbc417d9d8f57924ac8cce8d38b0c8007b9965358",
+          "Fingerprint": "sha256:e9384200e74a037ca3fa0ed7168262b7509c17665809c8891611e3192402771d",
           "Title": "express: Improper Input Handling in Express Redirects",
           "Description": "Express.js minimalist web framework for node. In express \u003c 4.20.0, passing untrusted user input - even after sanitizing it - to response.redirect() may execute untrusted code. This issue is patched in express 4.20.0.",
           "Severity": "LOW",
@@ -6235,7 +6228,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:6807fec501e1b87a28b81747ca653caccea66240300ffeb6b777d7aee6311752",
+          "Fingerprint": "sha256:74d6385a7e4c03a2938ddb85ec27f944d7eef2d29e2b27682d8026f34c3428bc",
           "Title": "glob: glob: Command Injection Vulnerability via Malicious Filenames",
           "Description": "Glob matches files using patterns the shell uses. Starting in version 10.2.0 and prior to versions 10.5.0 and 11.1.0, the glob CLI contains a command injection vulnerability in its -c/--cmd option that allows arbitrary command execution when processing files with malicious names. When glob -c \u003ccommand\u003e \u003cpatterns\u003e are used, matched filenames are passed to a shell with shell: true, enabling shell metacharacters in filenames to trigger command injection and achieve arbitrary code execution under the user or CI account privileges. This issue has been patched in versions 10.5.0 and 11.1.0.",
           "Severity": "HIGH",
@@ -6294,7 +6287,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:f395733456e2daba4b47bd8f3d2283caf98e69c221aea433c26207a14829a0fa",
+          "Fingerprint": "sha256:993cd042e0087c6409aed20d7b3a4c612c54052483dbee8a7ad2a707c0c7c273",
           "Title": "ip-address is a library for parsing and manipulating IPv4 and IPv6 add ...",
           "Description": "ip-address is a library for parsing and manipulating IPv4 and IPv6 addresses in JavaScript. Prior to 10.1.1, Address6.group() and Address6.link() do not HTML-escape attacker-controlled content before embedding it in the HTML strings they return, and AddressError.parseMessage (emitted by the Address6 constructor for invalid input) can contain unescaped attacker-controlled content in one branch. An application that (1) passes untrusted input to Address6 and (2) renders the output of these methods, or the thrown error's parseMessage, as HTML (e.g. via innerHTML) is vulnerable to cross-site scripting. This vulnerability is fixed in 10.1.1.",
           "Severity": "MEDIUM",
@@ -6334,8 +6327,8 @@
           "FixedVersion": "4.18.0",
           "Status": "fixed",
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-4800",
@@ -6344,7 +6337,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:599faa2e257db98ecbcad4ba4a2577b72ff6a7f5d58cfa23f4c5fdcb0b2d530d",
+          "Fingerprint": "sha256:f1add1287fc8901d3396d5634150bbe7fca8ac75279ee0c1c2f0b6f6feec88e2",
           "Title": "lodash: lodash: Arbitrary code execution via untrusted input in template imports",
           "Description": "Impact:\n\nThe fix for CVE-2021-23337 (https://github.com/advisories/GHSA-35jh-r3h4-6jhm) added validation for the variable option in _.template but did not apply the same validation to options.imports key names. Both paths flow into the same Function() constructor sink.\n\nWhen an application passes untrusted input as options.imports key names, an attacker can inject default-parameter expressions that execute arbitrary code at template compilation time.\n\nAdditionally, _.template uses assignInWith to merge imports, which enumerates inherited properties via for..in. If Object.prototype has been polluted by any other vector, the polluted keys are copied into the imports object and passed to Function().\n\nPatches:\n\nUsers should upgrade to version 4.18.0.\n\nWorkarounds:\n\nDo not pass untrusted input as key names in options.imports. Only use developer-controlled, static key names.",
           "Severity": "HIGH",
@@ -6406,8 +6399,8 @@
           "FixedVersion": "4.17.23",
           "Status": "fixed",
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2025-13465",
@@ -6416,7 +6409,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:c23199af3ac604928f5ca083c0faeaf7422919cd2f75c0a04016ef270bfe02bc",
+          "Fingerprint": "sha256:1b2cc8554200dd0811b9ccc85187b5868395b6dd8980002706782eef335764e4",
           "Title": "lodash: prototype pollution in _.unset and _.omit functions",
           "Description": "Lodash versions 4.0.0 through 4.17.22 are vulnerable to prototype pollution in the _.unset and _.omit functions. An attacker can pass crafted paths which cause Lodash to delete methods from global prototypes.\n\nThe issue permits deletion of properties but does not allow overwriting their original behavior.\n\nThis issue is patched on 4.17.23",
           "Severity": "MEDIUM",
@@ -6478,8 +6471,8 @@
           "FixedVersion": "4.18.0",
           "Status": "fixed",
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-2950",
@@ -6488,7 +6481,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:58634a957f8d493bd0d40f6dc68d79ed0e924c1983b481dc0ed32029ab755a0a",
+          "Fingerprint": "sha256:0cb760072bd62ed9c0fd9a200fa4c7e0e36cb51729a7868ed5f210f11492dc92",
           "Title": "lodash: Lodash: Prototype pollution allows deletion of built-in prototype properties via array path bypass",
           "Description": "Impact:\n\nLodash versions 4.17.23 and earlier are vulnerable to prototype pollution in the _.unset and _.omit functions. The fix for (CVE-2025-13465: https://github.com/lodash/lodash/security/advisories/GHSA-xxjr-mmjv-4gpg) only guards against string key members, so an attacker can bypass the check by passing array-wrapped path segments. This allows deletion of properties from built-in prototypes such as Object.prototype, Number.prototype, and String.prototype.\n\nThe issue permits deletion of prototype properties but does not allow overwriting their original behavior.\n\nPatches:\n\nThis issue is patched in 4.18.0.\n\nWorkarounds:\n\nNone. Upgrade to the patched version.",
           "Severity": "MEDIUM",
@@ -6551,7 +6544,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:f264912d6b1debd09d96ba57cc356eb7ac05b2a7e623bf89fa85710f455631a6",
+          "Fingerprint": "sha256:b3e50e41fc34e75962fccb75e30a4ac45b4f3e55a1327f5f4f0db99e5af5e9aa",
           "Title": "minimatch: minimatch: Denial of Service via specially crafted glob patterns",
           "Description": "minimatch is a minimal matching utility for converting glob expressions into JavaScript RegExp objects. Versions 10.2.0 and below are vulnerable to Regular Expression Denial of Service (ReDoS) when a glob pattern contains many consecutive * wildcards followed by a literal character that doesn't appear in the test string. Each * compiles to a separate [^/]*? regex group, and when the match fails, V8's regex engine backtracks exponentially across all possible splits. The time complexity is O(4^N) where N is the number of * characters. With N=15, a single minimatch() call takes ~2 seconds. With N=34, it hangs effectively forever. Any application that passes user-controlled strings to minimatch() as the pattern argument is vulnerable to DoS. This issue has been fixed in version 10.2.1.",
           "Severity": "HIGH",
@@ -6634,7 +6627,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:9a26e0e0f07b9d341f33b531f93c4ac51803844696fe737b3037b72a967024e5",
+          "Fingerprint": "sha256:606584f5e436da2141772084d3a81c8b99dd9e683b38b6156fae27da82dab929",
           "Title": "minimatch: minimatch: Denial of Service due to unbounded recursive backtracking via crafted glob patterns",
           "Description": "minimatch is a minimal matching utility for converting glob expressions into JavaScript RegExp objects. Prior to version 10.2.3, 9.0.7, 8.0.6, 7.4.8, 6.2.2, 5.1.8, 4.2.5, and 3.1.3, `matchOne()` performs unbounded recursive backtracking when a glob pattern contains multiple non-adjacent `**` (GLOBSTAR) segments and the input path does not match. The time complexity is O(C(n, k)) -- binomial -- where `n` is the number of path segments and `k` is the number of globstars. With k=11 and n=30, a call to the default `minimatch()` API stalls for roughly 5 seconds. With k=13, it exceeds 15 seconds. No memoization or call budget exists to bound this behavior. Any application where an attacker can influence the glob pattern passed to `minimatch()` is vulnerable. The realistic attack surface includes build tools and task runners that accept user-supplied glob arguments (ESLint, Webpack, Rollup config), multi-tenant systems where one tenant configures glob-based rules that run in a shared process, admin or developer interfaces that accept ignore-rule or filter configuration as globs, and CI/CD pipelines that evaluate user-submitted config files containing glob patterns. An attacker who can place a crafted pattern into any of these paths can stall the Node.js event loop for tens of seconds per invocation. The pattern is 56 bytes for a 5-second stall and does not require authentication in contexts where pattern input is part of the feature. Versions 10.2.3, 9.0.7, 8.0.6, 7.4.8, 6.2.2, 5.1.8, 4.2.5, and 3.1.3 fix the issue.",
           "Severity": "HIGH",
@@ -6692,7 +6685,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:1ab1eb1a96a2e10bd34131e07a87b7f695268d30c84b8731f93973253bf03ff8",
+          "Fingerprint": "sha256:3bf71eee59d5a8aece4df820c0778ecb16d821517e8f7d381f21cf2c1fbfcfa6",
           "Title": "minimatch: Minimatch: Denial of Service via catastrophic backtracking in glob expressions",
           "Description": "minimatch is a minimal matching utility for converting glob expressions into JavaScript RegExp objects. Prior to version 10.2.3, 9.0.7, 8.0.6, 7.4.8, 6.2.2, 5.1.8, 4.2.5, and 3.1.4, nested `*()` extglobs produce regexps with nested unbounded quantifiers (e.g. `(?:(?:a|b)*)*`), which exhibit catastrophic backtracking in V8. With a 12-byte pattern `*(*(*(a|b)))` and an 18-byte non-matching input, `minimatch()` stalls for over 7 seconds. Adding a single nesting level or a few input characters pushes this to minutes. This is the most severe finding: it is triggered by the default `minimatch()` API with no special options, and the minimum viable pattern is only 12 bytes. The same issue affects `+()` extglobs equally. Versions 10.2.3, 9.0.7, 8.0.6, 7.4.8, 6.2.2, 5.1.8, 4.2.5, and 3.1.4 fix the issue.",
           "Severity": "HIGH",
@@ -6760,8 +6753,8 @@
           "FixedVersion": "1.9.0, 0.1.10, 8.0.0, 3.3.0, 6.3.0",
           "Status": "fixed",
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-45296",
@@ -6770,7 +6763,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:d7aa5e1a492b81b65233e0eb2940d2472d400b3b0fcf74993941f3ce2bdaae83",
+          "Fingerprint": "sha256:604447796279233e9c0281891b66139cc96a4bb8723b1f765216d1c43995252d",
           "Title": "path-to-regexp: Backtracking regular expressions cause ReDoS",
           "Description": "path-to-regexp turns path strings into a regular expressions. In certain cases, path-to-regexp will output a regular expression that can be exploited to cause poor performance. Because JavaScript is single threaded and regex matching runs on the main thread, poor performance will block the event loop and lead to a DoS. The bad regular expression is generated any time you have two parameters within a single segment, separated by something that is not a period (.). For users of 0.1, upgrade to 0.1.10. All other users should upgrade to 8.0.0.",
           "Severity": "HIGH",
@@ -6828,8 +6821,8 @@
           "FixedVersion": "0.1.12",
           "Status": "fixed",
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-52798",
@@ -6838,7 +6831,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:a5c95c06e58714b0e1bd41ec39da1d8ba0dc34a397f66311c31625a8167e0a03",
+          "Fingerprint": "sha256:b5bc67489046c9b8e38d6596ab676682c76ee1c0976e98970613b63b5526f34b",
           "Title": "path-to-regexp: path-to-regexp Unpatched `path-to-regexp` ReDoS in 0.1.x",
           "Description": "path-to-regexp turns path strings into a regular expressions. In certain cases, path-to-regexp will output a regular expression that can be exploited to cause poor performance. The regular expression that is vulnerable to backtracking can be generated in the 0.1.x release of path-to-regexp. Upgrade to 0.1.12. This vulnerability exists because of an incomplete fix for CVE-2024-45296.",
           "Severity": "HIGH",
@@ -6892,8 +6885,8 @@
           "FixedVersion": "0.1.13",
           "Status": "fixed",
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-4867",
@@ -6902,7 +6895,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:2b89d68e39339e333fe48fa29fe99b3e1b62688ae05b45f73aecf5052e286628",
+          "Fingerprint": "sha256:fb282f963a249e5671600f7ded6986d9f15aaf2329008bafc414956e93102372",
           "Title": "path-to-regexp: path-to-regexp: Denial of Service via catastrophic backtracking from malformed URL parameters",
           "Description": "Impact:\n\nA bad regular expression is generated any time you have three or more parameters within a single segment, separated by something that is not a period (.). For example, /:a-:b-:c or /:a-:b-:c-:d. The backtrack protection added in path-to-regexp@0.1.12 only prevents ambiguity for two parameters. With three or more, the generated lookahead does not block single separator characters, so capture groups overlap and cause catastrophic backtracking.\n\nPatches:\n\nUpgrade to path-to-regexp@0.1.13\n\nCustom regex patterns in route definitions (e.g., /:a-:b([^-/]+)-:c([^-/]+)) are not affected because they override the default capture group.\n\nWorkarounds:\n\nAll versions can be patched by providing a custom regular expression for parameters after the first in a single segment. As long as the custom regular expression does not match the text before the parameter, you will be safe. For example, change /:a-:b-:c to /:a-:b([^-/]+)-:c([^-/]+).\n\nIf paths cannot be rewritten and versions cannot be upgraded, another alternative is to limit the URL length.",
           "Severity": "HIGH",
@@ -6953,8 +6946,8 @@
           "FixedVersion": "6.14.1",
           "Status": "fixed",
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2025-15284",
@@ -6963,7 +6956,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:863d52a996d99d84ba09ce9127c115796e44b38656490fb6d49cc4e245ffa1dd",
+          "Fingerprint": "sha256:15f432d00650fa15748f273370c4de06d5623ae7d4688d7d6d8e577fb328b7ad",
           "Title": "qs: qs: Denial of Service via improper input validation in array parsing",
           "Description": "Improper Input Validation vulnerability in qs (parse modules) allows HTTP DoS.This issue affects qs: \u003c 6.14.1.\n\n\nSummary\n\nThe arrayLimit option in qs did not enforce limits for bracket notation (a[]=1\u0026a[]=2), only for indexed notation (a[0]=1). This is a consistency bug; arrayLimit should apply uniformly across all array notations.\n\nNote: The default parameterLimit of 1000 effectively mitigates the DoS scenario originally described. With default options, bracket notation cannot produce arrays larger than parameterLimit regardless of arrayLimit, because each a[]=valueconsumes one parameter slot. The severity has been reduced accordingly.\n\nDetails\n\nThe arrayLimit option only checked limits for indexed notation (a[0]=1\u0026a[1]=2) but did not enforce it for bracket notation (a[]=1\u0026a[]=2).\n\nVulnerable code (lib/parse.js:159-162):\n\nif (root === '[]' \u0026\u0026 options.parseArrays) {\n    obj = utils.combine([], leaf);  // No arrayLimit check\n}\n\n\n\n\n\nWorking code (lib/parse.js:175):\n\nelse if (index \u003c= options.arrayLimit) {  // Limit checked here\n    obj = [];\n    obj[index] = leaf;\n}\n\n\n\n\n\nThe bracket notation handler at line 159 uses utils.combine([], leaf) without validating against options.arrayLimit, while indexed notation at line 175 checks index \u003c= options.arrayLimit before creating arrays.\n\n\n\nPoC\n\nconst qs = require('qs');\nconst result = qs.parse('a[]=1\u0026a[]=2\u0026a[]=3\u0026a[]=4\u0026a[]=5\u0026a[]=6', { arrayLimit: 5 });\nconsole.log(result.a.length);  // Output: 6 (should be max 5)\n\n\n\n\n\nNote on parameterLimit interaction: The original advisory's \"DoS demonstration\" claimed a length of 10,000, but parameterLimit (default: 1000) caps parsing to 1,000 parameters. With default options, the actual output is 1,000, not 10,000.\n\nImpact\n\nConsistency bug in arrayLimit enforcement. With default parameterLimit, the practical DoS risk is negligible since parameterLimit already caps the total number of parsed parameters (and thus array elements from bracket notation). The risk increases only when parameterLimit is explicitly set to a very high value.",
           "Severity": "MEDIUM",
@@ -7013,8 +7006,8 @@
           "FixedVersion": "6.14.2",
           "Status": "fixed",
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-2391",
@@ -7023,7 +7016,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:37f205ec69ab33e7f7526b09c51718d3e9240374743a3bf85990c9117d753734",
+          "Fingerprint": "sha256:d5c41ff2a2eac6e8e353a3ff1c083ab3b820a3cc0a61f70c965b23bd8a0e2945",
           "Title": "qs: qs's arrayLimit bypass in comma parsing allows denial of service",
           "Description": "### Summary\nThe `arrayLimit` option in qs does not enforce limits for comma-separated values when `comma: true` is enabled, allowing attackers to cause denial-of-service via memory exhaustion. This is a bypass of the array limit enforcement, similar to the bracket notation bypass addressed in GHSA-6rw7-vpxm-498p (CVE-2025-15284).\n\n### Details\nWhen the `comma` option is set to `true` (not the default, but configurable in applications), qs allows parsing comma-separated strings as arrays (e.g., `?param=a,b,c` becomes `['a', 'b', 'c']`). However, the limit check for `arrayLimit` (default: 20) and the optional throwOnLimitExceeded occur after the comma-handling logic in `parseArrayValue`, enabling a bypass. This permits creation of arbitrarily large arrays from a single parameter, leading to excessive memory allocation.\n\n**Vulnerable code** (lib/parse.js: lines ~40-50):\n```js\nif (val \u0026\u0026 typeof val === 'string' \u0026\u0026 options.comma \u0026\u0026 val.indexOf(',') \u003e -1) {\n    return val.split(',');\n}\n\nif (options.throwOnLimitExceeded \u0026\u0026 currentArrayLength \u003e= options.arrayLimit) {\n    throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');\n}\n\nreturn val;\n```\nThe `split(',')` returns the array immediately, skipping the subsequent limit check. Downstream merging via `utils.combine` does not prevent allocation, even if it marks overflows for sparse arrays.This discrepancy allows attackers to send a single parameter with millions of commas (e.g., `?param=,,,,,,,,...`), allocating massive arrays in memory without triggering limits. It bypasses the intent of `arrayLimit`, which is enforced correctly for indexed (`a[0]=`) and bracket (`a[]=`) notations (the latter fixed in v6.14.1 per GHSA-6rw7-vpxm-498p).\n\n### PoC\n**Test 1 - Basic bypass:**\n```\nnpm install qs\n```\n\n```js\nconst qs = require('qs');\n\nconst payload = 'a=' + ','.repeat(25);  // 26 elements after split (bypasses arrayLimit: 5)\nconst options = { comma: true, arrayLimit: 5, throwOnLimitExceeded: true };\n\ntry {\n  const result = qs.parse(payload, options);\n  console.log(result.a.length);  // Outputs: 26 (bypass successful)\n} catch (e) {\n  console.log('Limit enforced:', e.message);  // Not thrown\n}\n```\n**Configuration:**\n- `comma: true`\n- `arrayLimit: 5`\n- `throwOnLimitExceeded: true`\n\nExpected: Throws \"Array limit exceeded\" error.\nActual: Parses successfully, creating an array of length 26.\n\n\n### Impact\nDenial of Service (DoS) via memory exhaustion.",
           "Severity": "LOW",
@@ -7076,8 +7069,8 @@
           "FixedVersion": "0.19.0",
           "Status": "fixed",
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-43799",
@@ -7086,7 +7079,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:14f014adc5f32abcd1d7804d81e622ab5f4d08041d65d4d9d959f95b566c3770",
+          "Fingerprint": "sha256:147ad1211d13f5bba2b6903e84ad81b0ebccb0b2d431c0e4b71c42c7c4e2999a",
           "Title": "send: Code Execution Vulnerability in Send Library",
           "Description": "Send is a library for streaming files from the file system as a http response. Send passes untrusted user input to SendStream.redirect() which executes untrusted code. This issue is patched in send 0.19.0.",
           "Severity": "LOW",
@@ -7143,8 +7136,8 @@
           "FixedVersion": "1.16.0, 2.1.0",
           "Status": "fixed",
           "Layer": {
-            "Digest": "sha256:7ba35e44fbf59e1302c9eedc9db90197f4ffefb8f7dc6c708010844dfa609688",
-            "DiffID": "sha256:ba092697bceed2563c1dbbe11950e129b179d0322476105c634daa0b3225e58c"
+            "Digest": "sha256:feb07ffc06d25259be6905cf84570c5ee78846ec3168c9980d7728722189c3a8",
+            "DiffID": "sha256:4c24cf779a76e77938e0d3749c423dc5608ced3b9ba124de9803973cb3c7eb3f"
           },
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-43800",
@@ -7153,7 +7146,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:5dda2a74316c98605024cd7af3da89ef4ebd78467651e783ca7ca7e6907452d8",
+          "Fingerprint": "sha256:65d4618f8fbf279a6aa6d927b87c3f9914b2235a1065c5ca1cf0f3f2f3c80f4b",
           "Title": "serve-static: Improper Sanitization in serve-static",
           "Description": "serve-static serves static files. serve-static passes untrusted user input - even after sanitizing it - to redirect() may execute untrusted code. This issue is patched in serve-static 1.16.0.",
           "Severity": "LOW",
@@ -7220,7 +7213,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:9571972f15a99f34461a5330b98b705e6e2078d1ef7f887e4d5946b1822e2c63",
+          "Fingerprint": "sha256:749491b83166cca8684b3c8b23674b7243d41159bc437bcb80994c89f8b4f0ed",
           "Title": "node-tar: tar: node-tar: Arbitrary file overwrite and symlink poisoning via unsanitized linkpaths in archives",
           "Description": "node-tar is a Tar for Node.js. The node-tar library (\u003c= 7.5.2) fails to sanitize the linkpath of Link (hardlink) and SymbolicLink entries when preservePaths is false (the default secure behavior). This allows malicious archives to bypass the extraction root restriction, leading to Arbitrary File Overwrite via hardlinks and Symlink Poisoning via absolute symlink targets. This vulnerability is fixed in 7.5.3.",
           "Severity": "HIGH",
@@ -7284,7 +7277,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:182de85ff043ab339f7aba8c1d6209bcde00e12d81ae616c2e0a2edab1f711f5",
+          "Fingerprint": "sha256:c9c64cbd78b6072defeb38e854d0780cce8b2f16bb59815363c5bfc60aac402f",
           "Title": "node-tar: tar: node-tar: Arbitrary file overwrite via Unicode path collision race condition",
           "Description": "node-tar,a Tar for Node.js, has a race condition vulnerability in versions up to and including 7.5.3. This is due to an incomplete handling of Unicode path collisions in the `path-reservations` system. On case-insensitive or normalization-insensitive filesystems (such as macOS APFS, In which it has been tested), the library fails to lock colliding paths (e.g., `ß` and `ss`), allowing them to be processed in parallel. This bypasses the library's internal concurrency safeguards and permits Symlink Poisoning attacks via race conditions. The library uses a `PathReservations` system to ensure that metadata checks and file operations for the same path are serialized. This prevents race conditions where one entry might clobber another concurrently. This is a Race Condition which enables Arbitrary File Overwrite. This vulnerability affects users and systems using node-tar on macOS (APFS/HFS+). Because of using `NFD` Unicode normalization (in which `ß` and `ss` are different), conflicting paths do not have their order properly preserved under filesystems that ignore Unicode normalization (e.g., APFS (in which `ß` causes an inode collision with `ss`)). This enables an attacker to circumvent internal parallelization locks (`PathReservations`) using conflicting filenames within a malicious tar archive. The patch in version 7.5.4 updates `path-reservations.js` to use a normalization form that matches the target filesystem's behavior (e.g., `NFKD`), followed by first `toLocaleLowerCase('en')` and then `toLocaleUpperCase('en')`. As a workaround, users who cannot upgrade promptly, and who are programmatically using `node-tar` to extract arbitrary tarball data should filter out all `SymbolicLink` entries (as npm does) to defend against arbitrary file writes via this file system entry name collision issue.",
           "Severity": "HIGH",
@@ -7350,7 +7343,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:bf59891cca4f439570c3f2feeb7698b2c6561fa9019923dc18909b2b0958cff2",
+          "Fingerprint": "sha256:60f5082ed46cd24802ae0509bf3b0260e2f7ef34b6937691feae1a6f6c5b7e8d",
           "Title": "node-tar: tar: node-tar: Arbitrary file creation via path traversal bypass in hardlink security check",
           "Description": "node-tar,a Tar for Node.js, contains a vulnerability in versions prior to 7.5.7 where the security check for hardlink entries uses different path resolution semantics than the actual hardlink creation logic. This mismatch allows an attacker to craft a malicious TAR archive that bypasses path traversal protections and creates hardlinks to arbitrary files outside the extraction directory. Version 7.5.7 contains a fix for the issue.",
           "Severity": "HIGH",
@@ -7410,7 +7403,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:2fb094bec1c434789a40196dddafc56b31f72f631c96d8c9713c8ab88fbbb5b5",
+          "Fingerprint": "sha256:a91d639f5156704c116b164bca088e3e42344748defab78e178033747367eef8",
           "Title": "node-tar: node-tar: Arbitrary file read/write via malicious archive hardlink creation",
           "Description": "node-tar is a full-featured Tar for Node.js. When using default options in versions 7.5.7 and below, an attacker-controlled archive can create a hardlink inside the extraction directory that points to a file outside the extraction root, enabling arbitrary file read and write as the extracting user. Severity is high because the primitive bypasses path protections and turns archive extraction into a direct filesystem access primitive. This issue has been fixed in version 7.5.8.",
           "Severity": "HIGH",
@@ -7475,7 +7468,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:d2913137777a9d4c9f38fd977b6abf7ab61bf117dc6738eb485201936e7a6070",
+          "Fingerprint": "sha256:e12f096c95a99d1a081fda23a4f1535681d6fdbf9d1d8016b83e6099a7c1d430",
           "Title": "node-tar: hardlink path traversal via drive-relative linkpath",
           "Description": "node-tar is a full-featured Tar for Node.js. Prior to version 7.5.10, tar can be tricked into creating a hardlink that points outside the extraction directory by using a drive-relative link target such as C:../target.txt, which enables file overwrite outside cwd during normal tar.x() extraction. This issue has been patched in version 7.5.10.",
           "Severity": "HIGH",
@@ -7540,7 +7533,7 @@
             "Name": "GitHub Security Advisory npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
-          "Fingerprint": "sha256:131e07616ff12fb3df122ac8d9b75a1b3e45fdefa16508f84cbc34af6d42795c",
+          "Fingerprint": "sha256:0ce47a531399d4ce0efded9bd56930285c46d70e9d621110c9d81b8615dc161b",
           "Title": "tar: tar: File overwrite via drive-relative symlink traversal",
           "Description": "node-tar is a full-featured Tar for Node.js. Prior to version 7.5.11, tar (npm) can be tricked into creating a symlink that points outside the extraction directory by using a drive-relative symlink target such as C:../../../target.txt, which enables file overwrite outside cwd during normal tar.x() extraction. This vulnerability is fixed in 7.5.11.",
           "Severity": "HIGH",

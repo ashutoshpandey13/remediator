@@ -3,9 +3,9 @@
   "Trivy": {
     "Version": "0.70.0"
   },
-  "ReportID": "019e3090-cbc7-7f0f-b4ae-0ef4dec56d5c",
-  "CreatedAt": "2026-05-16T17:04:16.263988+05:30",
-  "ArtifactName": "/Users/bhushanbhavsar/remediator/audesec-poc/security-remediation-a4m7pg/deployment.yaml",
+  "ReportID": "019e30c1-93eb-77d1-9bbc-ff7ac79611fa",
+  "CreatedAt": "2026-05-16T12:27:33.227514214Z",
+  "ArtifactName": "/app/security-remediation-cpzvst/deployment.yaml",
   "ArtifactType": "filesystem",
   "Results": [
     {
@@ -52,11 +52,11 @@
                 },
                 {
                   "Number": 22,
-                  "Content": "        image: nginx:1.21.6",
+                  "Content": "        image: nginx:1.23.0",
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
-                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: nginx:1.21.6",
+                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: nginx:1.23.0",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -177,11 +177,11 @@
                 },
                 {
                   "Number": 22,
-                  "Content": "        image: nginx:1.21.6",
+                  "Content": "        image: nginx:1.23.0",
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
-                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: nginx:1.21.6",
+                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: nginx:1.23.0",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -302,11 +302,11 @@
                 },
                 {
                   "Number": 22,
-                  "Content": "        image: nginx:1.21.6",
+                  "Content": "        image: nginx:1.23.0",
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
-                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: nginx:1.21.6",
+                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: nginx:1.23.0",
                   "FirstCause": false,
                   "LastCause": false
                 },
@@ -516,11 +516,11 @@
                 },
                 {
                   "Number": 22,
-                  "Content": "        image: nginx:1.21.6",
+                  "Content": "        image: nginx:1.23.0",
                   "IsCause": true,
                   "Annotation": "",
                   "Truncated": false,
-                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: nginx:1.21.6",
+                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: nginx:1.23.0",
                   "FirstCause": false,
                   "LastCause": false
                 },

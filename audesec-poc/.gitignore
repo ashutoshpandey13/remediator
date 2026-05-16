@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment files (SENSITIVE - DO NOT COMMIT)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Cloned repositories (generated at runtime)
+cloned_repo/
+security-remediation-*/
+
+# Reports (generated at runtime)
+reports/*.json
+
+# Backup files
+*.bak
+*.backup
+
+# OS files
+Thumbs.db
+.DS_Store
