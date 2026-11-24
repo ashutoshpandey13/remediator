@@ -1,13 +1,9 @@
-from openai import OpenAI
 from dotenv import load_dotenv
-import os
 import re
 
-load_dotenv()
+from agents.bob_client import call_bob, extract_code_block
 
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+load_dotenv()
 
 
 def detect_base_image_type(dockerfile_content: str) -> str:
@@ -117,18 +113,7 @@ Instructions:
 Return ONLY the fixed Dockerfile content, no explanations or markdown.
 """
     
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        temperature=0.3
-    )
-    
-    content = response.choices[0].message.content
+    content = extract_code_block(call_bob(prompt))
     
     # Clean up markdown code blocks if present
     content = content.replace("```dockerfile", "").replace("```Dockerfile", "").replace("```", "")

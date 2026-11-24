@@ -1,13 +1,24 @@
-from openai import OpenAI
 from dotenv import load_dotenv
 
-import os
+from agents.bob_client import call_bob, extract_code_block
 
 load_dotenv()
 
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+SECTION_MARKERS = ("===FIXED_DEPLOYMENT===", "===FIXED_PACKAGE_JSON===")
+
+
+def _keep_only_sections(content: str) -> str:
+    """Drop any prose around the marked sections and unwrap ``` fences."""
+    sections = []
+    for marker in SECTION_MARKERS:
+        if marker not in content:
+            continue
+        segment = content.split(marker, 1)[1]
+        for other in SECTION_MARKERS:
+            if other != marker and other in segment:
+                segment = segment.split(other, 1)[0]
+        sections.append(f"{marker}\n{extract_code_block(segment)}")
+    return "\n\n".join(sections) if sections else content
 
 
 def generate_remediation(
@@ -123,22 +134,12 @@ Return response in this exact format (no comments, no extra text):
 <fixed package json - no comments>
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a DevSecOps expert. Generate ONLY valid YAML and JSON. NO comments, NO explanations, NO markdown."
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        temperature=0.2
+    content = call_bob(
+        "You are a DevSecOps expert. Generate ONLY valid YAML and JSON. "
+        "NO comments, NO explanations, NO markdown.\n" + prompt
     )
-
-    content = response.choices[0].message.content
+    
+    content = _keep_only_sections(content)
     
     # Clean up markdown code blocks if present
     content = content.replace("```yaml", "").replace("```json", "").replace("```", "")
