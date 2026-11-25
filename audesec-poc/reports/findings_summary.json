@@ -1,0 +1,14 @@
+{
+  "original_cves": 1029,
+  "fixed_cves": 1021,
+  "original_misconfigs": 20,
+  "fixed_misconfigs": 0,
+  "jira_tickets": [
+    "AUD-474",
+    "AUD-475",
+    "AUD-476",
+    "AUD-477",
+    "AUD-478"
+  ],
+  "deployment_health": "HEALTHY"
+}

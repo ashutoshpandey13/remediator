@@ -23,7 +23,19 @@ spec:
           type: RuntimeDefault
       containers:
       - name: nginx
-        image: nginx:1.24.0
+        image: nginx:1.23.4
+
+        securityContext:
+          privileged: false
+          allowPrivilegeEscalation: false
+          runAsUser: 10001
+          runAsGroup: 10001
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+
         ports:
         - containerPort: 8080
 
@@ -32,18 +44,5 @@ spec:
             cpu: "500m"
             memory: "256Mi"
           requests:
-            cpu: "250m"
+            cpu: "100m"
             memory: "128Mi"
-
-        securityContext:
-          privileged: false
-          allowPrivilegeEscalation: false
-          runAsNonRoot: true
-          readOnlyRootFilesystem: true
-          runAsUser: 10001
-          runAsGroup: 10001
-          capabilities:
-            drop:
-            - ALL
-          seccompProfile:
-            type: RuntimeDefault

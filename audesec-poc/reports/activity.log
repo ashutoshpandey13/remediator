@@ -1,0 +1,505 @@
+[2026-05-16 10:41:45] Kubernetes scan completed
+[2026-05-16 10:41:45] Container CVE scan completed
+[2026-05-16 10:41:45] Unified findings generated
+[2026-05-16 10:41:48] Created JIRA ticket AUD-31
+[2026-05-16 10:41:49] Created JIRA ticket AUD-32
+[2026-05-16 10:41:51] Created JIRA ticket AUD-33
+[2026-05-16 10:41:52] Created JIRA ticket AUD-34
+[2026-05-16 10:41:53] Created JIRA ticket AUD-35
+[2026-05-16 10:42:00] AI remediation generated
+[2026-05-16 10:42:00] Validation completed
+[2026-05-16 10:42:07] Docker image rebuilt
+[2026-05-16 10:42:14] Runtime health validation passed
+[2026-05-16 10:42:14] Security summary generated
+[2026-05-16 11:01:29] Kubernetes scan completed
+[2026-05-16 11:01:29] Container CVE scan completed
+[2026-05-16 11:01:29] Unified findings generated
+[2026-05-16 11:01:33] Created JIRA ticket AUD-41
+[2026-05-16 11:01:34] Created JIRA ticket AUD-42
+[2026-05-16 11:01:36] Created JIRA ticket AUD-43
+[2026-05-16 11:01:37] Created JIRA ticket AUD-44
+[2026-05-16 11:01:39] Created JIRA ticket AUD-45
+[2026-05-16 11:01:46] AI remediation generated
+[2026-05-16 11:01:46] Validation completed
+[2026-05-16 11:01:49] Docker image rebuilt
+[2026-05-16 11:01:56] Runtime health validation passed
+[2026-05-16 11:01:56] Security summary generated
+[2026-05-16 12:13:00] Kubernetes scan completed
+[2026-05-16 12:13:01] Container CVE scan completed
+[2026-05-16 12:13:09] SAST scan completed
+[2026-05-16 12:13:09] Unified findings generated
+[2026-05-16 12:13:12] Created JIRA ticket AUD-101
+[2026-05-16 12:13:13] Created JIRA ticket AUD-102
+[2026-05-16 12:13:15] Created JIRA ticket AUD-103
+[2026-05-16 12:13:16] Created JIRA ticket AUD-104
+[2026-05-16 12:13:17] Created JIRA ticket AUD-105
+[2026-05-16 12:13:30] AI remediation generated
+[2026-05-16 12:13:30] Validation completed
+[2026-05-16 12:13:33] Docker image rebuilt
+[2026-05-16 12:13:45] Runtime health validation passed
+[2026-05-16 12:13:45] Security summary generated
+[2026-05-16 12:19:30] Kubernetes scan completed
+[2026-05-16 12:19:30] Container CVE scan completed
+[2026-05-16 12:19:38] SAST scan completed
+[2026-05-16 12:19:38] Unified findings generated
+[2026-05-16 12:19:41] Created JIRA ticket AUD-106
+[2026-05-16 12:19:43] Created JIRA ticket AUD-107
+[2026-05-16 12:19:44] Created JIRA ticket AUD-108
+[2026-05-16 12:19:45] Created JIRA ticket AUD-109
+[2026-05-16 12:19:47] Created JIRA ticket AUD-110
+[2026-05-16 12:19:54] AI remediation generated
+[2026-05-16 12:19:54] Validation completed
+[2026-05-16 12:28:07] Kubernetes scan completed
+[2026-05-16 12:28:08] Container CVE scan completed
+[2026-05-16 12:28:15] SAST scan completed
+[2026-05-16 12:28:15] Unified findings generated
+[2026-05-16 12:28:20] Created JIRA ticket AUD-116
+[2026-05-16 12:28:22] Created JIRA ticket AUD-117
+[2026-05-16 12:28:24] Created JIRA ticket AUD-118
+[2026-05-16 12:28:25] Created JIRA ticket AUD-119
+[2026-05-16 12:28:26] Created JIRA ticket AUD-120
+[2026-05-16 12:28:35] AI remediation generated
+[2026-05-16 12:28:35] Validation completed
+[2026-05-16 12:29:41] Kubernetes scan completed
+[2026-05-16 12:29:42] Container CVE scan completed
+[2026-05-16 12:29:49] SAST scan completed
+[2026-05-16 12:29:49] Unified findings generated
+[2026-05-16 12:29:52] Created JIRA ticket AUD-121
+[2026-05-16 12:29:53] Created JIRA ticket AUD-122
+[2026-05-16 12:29:55] Created JIRA ticket AUD-123
+[2026-05-16 12:29:56] Created JIRA ticket AUD-124
+[2026-05-16 12:29:57] Created JIRA ticket AUD-125
+[2026-05-16 12:30:06] AI remediation generated
+[2026-05-16 12:30:06] Validation completed
+[2026-05-16 12:32:36] Kubernetes scan completed
+[2026-05-16 12:32:36] Container CVE scan completed
+[2026-05-16 12:32:44] SAST scan completed
+[2026-05-16 12:32:44] Unified findings generated
+[2026-05-16 12:32:47] Created JIRA ticket AUD-131
+[2026-05-16 12:32:49] Created JIRA ticket AUD-132
+[2026-05-16 12:32:50] Created JIRA ticket AUD-133
+[2026-05-16 12:32:51] Created JIRA ticket AUD-134
+[2026-05-16 12:32:53] Created JIRA ticket AUD-135
+[2026-05-16 12:33:00] AI remediation generated
+[2026-05-16 12:33:00] Validation completed
+[2026-05-16 12:35:05] Kubernetes scan completed
+[2026-05-16 12:35:05] Container CVE scan completed
+[2026-05-16 12:35:14] SAST scan completed
+[2026-05-16 12:35:14] Unified findings generated
+[2026-05-16 12:35:16] Created JIRA ticket AUD-141
+[2026-05-16 12:35:18] Created JIRA ticket AUD-142
+[2026-05-16 12:35:19] Created JIRA ticket AUD-143
+[2026-05-16 12:35:20] Created JIRA ticket AUD-144
+[2026-05-16 12:35:22] Created JIRA ticket AUD-145
+[2026-05-16 12:35:32] AI remediation generated
+[2026-05-16 12:35:32] Validation completed
+[2026-05-16 12:38:36] Kubernetes scan completed
+[2026-05-16 12:38:36] Container CVE scan completed
+[2026-05-16 12:38:44] SAST scan completed
+[2026-05-16 12:38:44] Unified findings generated
+[2026-05-16 12:38:47] Created JIRA ticket AUD-151
+[2026-05-16 12:38:49] Created JIRA ticket AUD-152
+[2026-05-16 12:38:50] Created JIRA ticket AUD-153
+[2026-05-16 12:38:51] Created JIRA ticket AUD-154
+[2026-05-16 12:38:52] Created JIRA ticket AUD-155
+[2026-05-16 12:39:06] AI remediation generated
+[2026-05-16 12:39:07] Validation completed
+[2026-05-16 12:39:15] Docker image rebuilt
+[2026-05-16 12:39:28] Runtime health validation passed
+[2026-05-16 12:39:28] Security summary generated
+[2026-05-16 12:41:34] Kubernetes scan completed
+[2026-05-16 12:41:35] Container CVE scan completed
+[2026-05-16 12:41:43] SAST scan completed
+[2026-05-16 12:41:43] Unified findings generated
+[2026-05-16 12:41:46] Created JIRA ticket AUD-161
+[2026-05-16 12:41:47] Created JIRA ticket AUD-162
+[2026-05-16 12:41:48] Created JIRA ticket AUD-163
+[2026-05-16 12:41:50] Created JIRA ticket AUD-164
+[2026-05-16 12:41:51] Created JIRA ticket AUD-165
+[2026-05-16 12:41:59] AI remediation generated
+[2026-05-16 12:41:59] Validation completed
+[2026-05-16 12:42:02] Docker image rebuilt
+[2026-05-16 12:42:13] Runtime health validation passed
+[2026-05-16 12:42:13] Security summary generated
+[2026-05-16 12:58:26] Kubernetes scan completed
+[2026-05-16 12:58:27] Container CVE scan completed
+[2026-05-16 12:58:35] SAST scan completed
+[2026-05-16 12:58:35] Unified findings generated
+[2026-05-16 12:58:38] Created JIRA ticket AUD-171
+[2026-05-16 12:58:39] Created JIRA ticket AUD-172
+[2026-05-16 12:58:40] Created JIRA ticket AUD-173
+[2026-05-16 12:58:42] Created JIRA ticket AUD-174
+[2026-05-16 12:58:43] Created JIRA ticket AUD-175
+[2026-05-16 12:58:51] AI remediation generated
+[2026-05-16 12:58:51] Validation completed
+[2026-05-16 12:58:55] Docker image rebuilt
+[2026-05-16 12:59:08] Runtime health validation passed
+[2026-05-16 12:59:08] Security summary generated
+[2026-05-16 13:19:29] Kubernetes scan completed
+[2026-05-16 13:19:36] Container CVE scan completed
+[2026-05-16 13:19:44] SAST scan completed
+[2026-05-16 13:19:44] Secret scan completed
+[2026-05-16 13:19:44] Unified findings generated
+[2026-05-16 13:19:46] Created JIRA ticket AUD-202
+[2026-05-16 13:19:48] Created JIRA ticket AUD-204
+[2026-05-16 13:19:49] Created JIRA ticket AUD-206
+[2026-05-16 13:19:50] Created JIRA ticket AUD-207
+[2026-05-16 13:19:51] Created JIRA ticket AUD-208
+[2026-05-16 13:20:05] AI remediation generated
+[2026-05-16 13:20:05] Validation completed
+[2026-05-16 13:20:19] Docker image rebuilt
+[2026-05-16 13:20:31] Runtime health validation passed
+[2026-05-16 13:20:31] Security summary generated
+[2026-05-16 13:32:19] Kubernetes scan completed
+[2026-05-16 13:32:19] Container CVE scan completed
+[2026-05-16 13:32:27] SAST scan completed
+[2026-05-16 13:32:27] Secret scan completed
+[2026-05-16 13:33:00] Kubernetes scan completed
+[2026-05-16 13:33:00] Container CVE scan completed
+[2026-05-16 13:33:08] SAST scan completed
+[2026-05-16 13:33:08] Secret scan completed
+[2026-05-16 13:33:08] CSPM scan completed
+[2026-05-16 13:33:08] Unified findings generated
+[2026-05-16 13:33:11] Created JIRA ticket AUD-214
+[2026-05-16 13:33:13] Created JIRA ticket AUD-215
+[2026-05-16 13:33:14] Created JIRA ticket AUD-216
+[2026-05-16 13:33:16] Created JIRA ticket AUD-217
+[2026-05-16 13:33:17] Created JIRA ticket AUD-218
+[2026-05-16 13:33:43] AI remediation generated
+[2026-05-16 13:33:43] Validation completed
+[2026-05-16 13:41:13] Kubernetes scan completed
+[2026-05-16 13:41:14] Container CVE scan completed
+[2026-05-16 13:41:22] SAST scan completed
+[2026-05-16 13:41:22] Secret scan completed
+[2026-05-16 13:41:22] CSPM scan completed
+[2026-05-16 13:41:22] Unified findings generated
+[2026-05-16 13:41:25] Created JIRA ticket AUD-219
+[2026-05-16 13:41:26] Created JIRA ticket AUD-220
+[2026-05-16 13:41:28] Created JIRA ticket AUD-221
+[2026-05-16 13:41:29] Created JIRA ticket AUD-222
+[2026-05-16 13:41:30] Created JIRA ticket AUD-223
+[2026-05-16 14:34:35] Kubernetes scan completed
+[2026-05-16 14:34:36] Container CVE scan completed
+[2026-05-16 14:34:44] SAST scan completed
+[2026-05-16 14:34:44] Secret scan completed
+[2026-05-16 14:34:44] CSPM scan completed
+[2026-05-16 14:34:44] Unified findings generated
+[2026-05-16 14:34:47] Created JIRA ticket AUD-224
+[2026-05-16 14:34:49] Created JIRA ticket AUD-225
+[2026-05-16 14:34:50] Created JIRA ticket AUD-226
+[2026-05-16 14:34:51] Created JIRA ticket AUD-227
+[2026-05-16 14:34:53] Created JIRA ticket AUD-228
+[2026-05-16 14:35:12] AI remediation generated
+[2026-05-16 14:35:12] Validation completed
+[2026-05-16 14:35:16] Docker image rebuilt
+[2026-05-16 14:35:27] Runtime health validation passed
+[2026-05-16 14:35:27] Security summary generated
+[2026-05-17 07:28:46] Kubernetes scan completed
+[2026-05-17 07:28:56] Container CVE scan completed
+[2026-05-17 07:29:05] SAST scan completed
+[2026-05-17 07:29:06] Secret scan completed
+[2026-05-17 07:29:06] CSPM scan completed
+[2026-05-17 07:29:06] Unified findings generated
+[2026-05-17 07:29:10] Created JIRA ticket AUD-359
+[2026-05-17 07:29:11] Created JIRA ticket AUD-360
+[2026-05-17 07:29:13] Created JIRA ticket AUD-361
+[2026-05-17 07:29:14] Created JIRA ticket AUD-362
+[2026-05-17 07:29:15] Created JIRA ticket AUD-363
+[2026-05-17 07:29:30] AI remediation generated
+[2026-05-17 07:29:30] Validation completed
+[2026-05-17 07:29:33] Docker image rebuilt
+[2026-05-17 07:29:45] Runtime health validation passed
+[2026-05-17 07:29:45] Security summary generated
+[2026-05-17 07:34:01] Kubernetes scan completed
+[2026-05-17 07:34:01] Container CVE scan completed
+[2026-05-17 07:34:09] SAST scan completed
+[2026-05-17 07:34:09] Secret scan completed
+[2026-05-17 07:34:09] CSPM scan completed
+[2026-05-17 07:34:09] Unified findings generated
+[2026-05-17 07:34:11] Created JIRA ticket AUD-364
+[2026-05-17 07:34:13] Created JIRA ticket AUD-365
+[2026-05-17 07:34:14] Created JIRA ticket AUD-366
+[2026-05-17 07:34:15] Created JIRA ticket AUD-367
+[2026-05-17 07:34:17] Created JIRA ticket AUD-368
+[2026-05-17 07:34:28] AI remediation generated
+[2026-05-17 07:34:28] Validation completed
+[2026-05-17 07:34:30] Docker image rebuilt
+[2026-05-17 07:34:42] Runtime health validation passed
+[2026-05-17 07:34:42] Security summary generated
+[2026-05-17 07:36:25] Kubernetes scan completed
+[2026-05-17 07:36:25] Container CVE scan completed
+[2026-05-17 07:36:33] SAST scan completed
+[2026-05-17 07:36:33] Secret scan completed
+[2026-05-17 07:36:33] CSPM scan completed
+[2026-05-17 07:36:33] Unified findings generated
+[2026-05-17 07:36:36] Created JIRA ticket AUD-369
+[2026-05-17 07:36:37] Created JIRA ticket AUD-370
+[2026-05-17 07:36:39] Created JIRA ticket AUD-371
+[2026-05-17 07:36:41] Created JIRA ticket AUD-372
+[2026-05-17 07:36:42] Created JIRA ticket AUD-373
+[2026-05-17 07:36:54] AI remediation generated
+[2026-05-17 07:36:54] Validation completed
+[2026-05-17 07:36:56] Docker image rebuilt
+[2026-05-17 07:37:08] Runtime health validation passed
+[2026-05-17 07:37:08] Security summary generated
+[2026-05-17 07:47:05] Kubernetes scan completed
+[2026-05-17 07:47:06] Container CVE scan completed
+[2026-05-17 07:47:14] SAST scan completed
+[2026-05-17 07:47:14] Secret scan completed
+[2026-05-17 07:47:14] CSPM scan completed
+[2026-05-17 07:47:14] Unified findings generated
+[2026-05-17 07:47:17] Created JIRA ticket AUD-379
+[2026-05-17 07:47:18] Created JIRA ticket AUD-380
+[2026-05-17 07:47:19] Created JIRA ticket AUD-381
+[2026-05-17 07:47:21] Created JIRA ticket AUD-382
+[2026-05-17 07:47:22] Created JIRA ticket AUD-383
+[2026-05-17 07:47:34] AI remediation generated
+[2026-05-17 07:47:34] Validation completed
+[2026-05-17 07:47:36] Docker image rebuilt
+[2026-05-17 07:47:48] Runtime health validation passed
+[2026-05-17 07:47:48] Security summary generated
+[2026-05-20 13:30:04] Kubernetes scan completed
+[2026-05-20 13:35:44] Kubernetes scan completed
+[2026-05-20 13:36:46] Kubernetes scan completed
+[2026-05-20 13:43:31] Kubernetes scan completed
+[2026-05-20 13:43:37] Container CVE scan completed
+[2026-05-20 13:43:45] SAST scan completed
+[2026-05-20 13:43:46] Secret scan completed
+[2026-05-20 13:43:46] CSPM scan completed
+[2026-05-20 13:43:46] Unified findings generated
+[2026-05-20 13:44:06] Kubernetes scan completed
+[2026-05-20 13:44:06] Container CVE scan completed
+[2026-05-20 13:44:14] SAST scan completed
+[2026-05-20 13:44:14] Secret scan completed
+[2026-05-20 13:44:14] CSPM scan completed
+[2026-05-20 13:44:14] Unified findings generated
+[2026-05-20 13:44:20] Created JIRA ticket AUD-389
+[2026-05-20 13:44:22] Created JIRA ticket AUD-390
+[2026-05-20 13:44:24] Created JIRA ticket AUD-391
+[2026-05-20 13:44:27] Created JIRA ticket AUD-392
+[2026-05-20 13:44:28] Created JIRA ticket AUD-393
+[2026-05-20 13:45:32] AI remediation generated
+[2026-05-20 13:45:32] Validation completed
+[2026-05-20 13:45:44] Docker image rebuilt
+[2026-05-20 13:45:55] Runtime health validation passed
+[2026-05-20 13:45:55] Security summary generated
+[2026-05-20 14:27:32] Kubernetes scan completed
+[2026-05-20 14:27:33] Container CVE scan completed
+[2026-05-20 14:27:41] SAST scan completed
+[2026-05-20 14:27:41] Secret scan completed
+[2026-05-20 14:27:41] CSPM scan completed
+[2026-05-20 14:27:41] Runtime scan completed
+[2026-05-20 14:29:28] Kubernetes scan completed
+[2026-05-20 14:29:28] Container CVE scan completed
+[2026-05-20 14:29:37] SAST scan completed
+[2026-05-20 14:29:37] Secret scan completed
+[2026-05-20 14:29:37] CSPM scan completed
+[2026-05-20 14:29:37] Runtime scan completed
+[2026-05-20 14:29:37] Unified findings generated
+[2026-05-20 14:29:40] Created JIRA ticket AUD-409
+[2026-05-20 14:29:41] Created JIRA ticket AUD-410
+[2026-05-20 14:29:43] Created JIRA ticket AUD-411
+[2026-05-20 14:29:45] Created JIRA ticket AUD-412
+[2026-05-20 14:29:46] Created JIRA ticket AUD-413
+[2026-05-20 14:30:15] AI remediation generated
+[2026-05-20 14:30:15] Validation completed
+[2026-05-20 14:30:17] Docker image rebuilt
+[2026-05-20 14:30:30] Runtime health validation passed
+[2026-05-20 14:30:30] Security summary generated
+[2026-05-20 14:40:46] Kubernetes scan completed
+[2026-05-20 14:40:47] Container CVE scan completed
+[2026-05-20 14:40:55] SAST scan completed
+[2026-05-20 14:40:55] Secret scan completed
+[2026-05-20 14:40:55] CSPM scan completed
+[2026-05-20 14:40:55] Runtime scan completed
+[2026-05-20 14:40:55] Network exposure scan completed
+[2026-05-20 14:40:55] Unified findings generated
+[2026-05-20 14:40:58] Created JIRA ticket AUD-414
+[2026-05-20 14:41:00] Created JIRA ticket AUD-415
+[2026-05-20 14:41:02] Created JIRA ticket AUD-416
+[2026-05-20 14:41:06] Created JIRA ticket AUD-417
+[2026-05-20 14:42:40] Created JIRA ticket AUD-418
+[2026-05-20 14:43:04] AI remediation generated
+[2026-05-20 14:43:05] Validation completed
+[2026-05-20 14:43:07] Docker image rebuilt
+[2026-05-20 14:43:18] Runtime health validation passed
+[2026-05-20 14:43:18] Security summary generated
+[2026-05-20 14:47:36] Kubernetes scan completed
+[2026-05-20 14:47:36] Container CVE scan completed
+[2026-05-20 14:47:45] SAST scan completed
+[2026-05-20 14:47:45] Secret scan completed
+[2026-05-20 14:47:45] CSPM scan completed
+[2026-05-20 14:47:45] Runtime scan completed
+[2026-05-20 14:47:45] Network exposure scan completed
+[2026-05-20 14:47:45] Unified findings generated
+[2026-05-20 14:47:47] Created JIRA ticket AUD-419
+[2026-05-20 14:47:49] Created JIRA ticket AUD-420
+[2026-05-20 14:47:50] Created JIRA ticket AUD-421
+[2026-05-20 14:47:52] Created JIRA ticket AUD-422
+[2026-05-20 14:47:53] Created JIRA ticket AUD-423
+[2026-05-20 14:48:24] AI remediation generated
+[2026-05-20 14:48:24] Validation completed
+[2026-05-20 14:48:26] Docker image rebuilt
+[2026-05-20 14:48:38] Runtime health validation passed
+[2026-05-20 14:48:38] Security summary generated
+[2026-05-21 10:24:54] Kubernetes scan completed
+[2026-05-21 10:24:54] Container CVE scan completed
+[2026-05-21 10:25:06] SAST scan completed
+[2026-05-21 10:25:07] Secret scan completed
+[2026-05-21 10:25:07] CSPM scan completed
+[2026-05-21 10:25:07] Runtime scan completed
+[2026-05-21 10:25:07] Network exposure scan completed
+[2026-05-21 10:25:07] Unified findings generated
+[2026-05-21 10:25:10] Created JIRA ticket AUD-429
+[2026-05-21 10:25:11] Created JIRA ticket AUD-430
+[2026-05-21 10:25:12] Created JIRA ticket AUD-431
+[2026-05-21 10:25:13] Created JIRA ticket AUD-432
+[2026-05-21 10:25:14] Created JIRA ticket AUD-433
+[2026-05-21 10:25:29] AI remediation generated
+[2026-05-21 10:25:29] Validation completed
+[2026-05-21 10:25:33] Docker image rebuilt
+[2026-05-21 10:25:45] Runtime health validation passed
+[2026-05-21 10:25:45] Security summary generated
+[2026-05-21 13:11:22] Kubernetes scan completed
+[2026-05-21 13:12:03] Kubernetes scan completed
+[2026-05-21 13:13:31] Kubernetes scan completed
+[2026-05-21 13:14:36] Kubernetes scan completed
+[2026-05-21 13:14:43] Container CVE scan completed
+[2026-05-21 13:14:52] SAST scan completed
+[2026-05-21 13:14:52] Secret scan completed
+[2026-05-21 13:14:52] CSPM scan completed
+[2026-05-21 13:14:52] Runtime scan completed
+[2026-05-21 13:14:52] Network exposure scan completed
+[2026-05-21 13:14:52] Unified findings generated
+[2026-05-21 13:14:55] Created JIRA ticket AUD-439
+[2026-05-21 13:14:56] Created JIRA ticket AUD-440
+[2026-05-21 13:14:58] Created JIRA ticket AUD-441
+[2026-05-21 13:14:59] Created JIRA ticket AUD-442
+[2026-05-21 13:15:00] Created JIRA ticket AUD-443
+[2026-05-21 13:15:15] AI remediation generated
+[2026-05-21 13:15:15] Validation completed
+[2026-05-21 13:15:24] Docker image rebuilt
+[2026-05-21 13:15:47] Runtime health validation passed
+[2026-05-21 13:15:47] Security summary generated
+[2026-05-21 13:37:44] Kubernetes scan completed
+[2026-05-21 13:37:44] Container CVE scan completed
+[2026-05-21 13:37:53] SAST scan completed
+[2026-05-21 13:37:53] Secret scan completed
+[2026-05-21 13:37:53] CSPM scan completed
+[2026-05-21 13:37:53] Runtime scan completed
+[2026-05-21 13:37:53] Network exposure scan completed
+[2026-05-21 13:37:53] Unified findings generated
+[2026-05-21 13:37:55] Created JIRA ticket AUD-449
+[2026-05-21 13:37:57] Created JIRA ticket AUD-450
+[2026-05-21 13:37:58] Created JIRA ticket AUD-451
+[2026-05-21 13:38:00] Created JIRA ticket AUD-452
+[2026-05-21 13:38:01] Created JIRA ticket AUD-453
+[2026-05-21 13:38:17] AI remediation generated
+[2026-05-21 13:38:17] Validation completed
+[2026-05-21 13:38:20] Docker image rebuilt
+[2026-05-21 13:38:37] Runtime health validation passed
+[2026-05-21 13:38:37] Security summary generated
+[2026-05-25 17:50:23] Kubernetes scan completed
+[2026-05-25 17:52:29] Kubernetes scan completed
+[2026-05-25 17:52:35] Container CVE scan completed
+[2026-05-25 17:52:44] SAST scan completed
+[2026-05-25 17:52:44] Secret scan completed
+[2026-05-25 17:52:44] CSPM scan completed
+[2026-05-25 17:52:44] Runtime scan completed
+[2026-05-25 17:52:44] Network exposure scan completed
+[2026-05-25 17:52:44] Unified findings generated
+[2026-05-25 17:53:07] AI remediation generated
+[2026-05-25 17:53:07] Validation completed
+[2026-05-25 17:53:16] Docker image rebuilt
+[2026-05-25 17:53:28] Runtime health validation passed
+[2026-05-25 17:53:28] Security summary generated
+[2026-05-25 17:59:12] Kubernetes scan completed
+[2026-05-25 17:59:12] Container CVE scan completed
+[2026-05-25 17:59:20] SAST scan completed
+[2026-05-25 17:59:20] Secret scan completed
+[2026-05-25 17:59:20] CSPM scan completed
+[2026-05-25 17:59:20] Runtime scan completed
+[2026-05-25 17:59:20] Network exposure scan completed
+[2026-05-25 17:59:20] Unified findings generated
+[2026-05-25 17:59:24] Created JIRA ticket AUD-454
+[2026-05-25 17:59:26] Created JIRA ticket AUD-455
+[2026-05-25 17:59:27] Created JIRA ticket AUD-456
+[2026-05-25 17:59:29] Created JIRA ticket AUD-457
+[2026-05-25 17:59:30] Created JIRA ticket AUD-458
+[2026-05-25 17:59:49] AI remediation generated
+[2026-05-25 17:59:49] Validation completed
+[2026-05-25 17:59:51] Docker image rebuilt
+[2026-05-25 18:00:03] Runtime health validation passed
+[2026-05-25 18:00:03] Security summary generated
+[2026-05-26 13:52:05] Kubernetes scan completed
+[2026-05-26 13:55:07] Container CVE scan completed
+[2026-05-26 13:55:15] SAST scan completed
+[2026-05-26 13:55:15] Secret scan completed
+[2026-05-26 13:55:15] CSPM scan completed
+[2026-05-26 13:55:15] Runtime scan completed
+[2026-05-26 13:55:15] Network exposure scan completed
+[2026-05-26 13:55:15] Unified findings generated
+[2026-05-26 13:55:21] Created JIRA ticket AUD-459
+[2026-05-26 13:55:23] Created JIRA ticket AUD-460
+[2026-05-26 13:55:25] Created JIRA ticket AUD-461
+[2026-05-26 13:55:27] Created JIRA ticket AUD-462
+[2026-05-26 13:55:29] Created JIRA ticket AUD-463
+[2026-05-26 13:55:47] AI remediation generated
+[2026-05-26 13:55:47] Validation completed
+[2026-05-26 13:55:50] Docker image rebuilt
+[2026-05-26 13:56:02] Runtime health validation passed
+[2026-05-26 13:56:02] Security summary generated
+[2026-05-26 14:40:54] Kubernetes scan completed
+[2026-05-26 14:40:55] Container CVE scan completed
+[2026-05-26 14:41:03] SAST scan completed
+[2026-05-26 14:41:04] Secret scan completed
+[2026-05-26 14:41:04] CSPM scan completed
+[2026-05-26 14:41:04] Runtime scan completed
+[2026-05-26 14:41:04] Network exposure scan completed
+[2026-05-26 14:41:04] Unified findings generated
+[2026-05-26 14:41:06] Created JIRA ticket AUD-464
+[2026-05-26 14:41:08] Created JIRA ticket AUD-465
+[2026-05-26 14:41:09] Created JIRA ticket AUD-466
+[2026-05-26 14:41:10] Created JIRA ticket AUD-467
+[2026-05-26 14:41:11] Created JIRA ticket AUD-468
+[2026-05-26 14:41:32] AI remediation generated
+[2026-05-26 14:41:32] Validation completed
+[2026-05-26 14:41:34] Docker image rebuilt
+[2026-05-26 14:41:47] Runtime health validation passed
+[2026-05-26 14:41:47] Security summary generated
+[2026-06-04 10:08:32] Kubernetes scan completed
+[2026-06-04 10:08:46] Container CVE scan completed
+[2026-06-04 10:08:57] SAST scan completed
+[2026-06-04 10:08:58] Secret scan completed
+[2026-06-04 10:08:58] CSPM scan completed
+[2026-06-04 10:08:58] Runtime scan completed
+[2026-06-04 10:08:58] Network exposure scan completed
+[2026-06-04 10:08:58] Unified findings generated
+[2026-06-04 10:09:06] Created JIRA ticket AUD-469
+[2026-06-04 10:09:08] Created JIRA ticket AUD-470
+[2026-06-04 10:09:11] Created JIRA ticket AUD-471
+[2026-06-04 10:09:13] Created JIRA ticket AUD-472
+[2026-06-04 10:09:15] Created JIRA ticket AUD-473
+[2026-06-04 10:09:55] AI remediation generated
+[2026-06-04 10:09:55] Validation completed
+[2026-06-04 10:10:00] Docker image rebuilt
+[2026-06-04 10:10:12] Runtime health validation passed
+[2026-06-04 10:10:12] Security summary generated
+[2026-06-04 10:35:40] Kubernetes scan completed
+[2026-06-04 10:35:41] Container CVE scan completed
+[2026-06-04 10:35:54] SAST scan completed
+[2026-06-04 10:35:54] Secret scan completed
+[2026-06-04 10:35:54] CSPM scan completed
+[2026-06-04 10:35:54] Runtime scan completed
+[2026-06-04 10:35:54] Network exposure scan completed
+[2026-06-04 10:35:54] Unified findings generated
+[2026-06-04 10:35:58] Created JIRA ticket AUD-474
+[2026-06-04 10:36:00] Created JIRA ticket AUD-475
+[2026-06-04 10:36:01] Created JIRA ticket AUD-476
+[2026-06-04 10:36:03] Created JIRA ticket AUD-477
+[2026-06-04 10:36:05] Created JIRA ticket AUD-478
+[2026-06-04 10:36:17] AI remediation generated
+[2026-06-04 10:36:17] Validation completed
+[2026-06-04 10:36:22] Docker image rebuilt
+[2026-06-04 10:36:53] Runtime health validation passed
+[2026-06-04 10:36:53] Security summary generated

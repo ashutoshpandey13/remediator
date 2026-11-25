@@ -1,0 +1,17 @@
+[
+  {
+    "id": "KHV001",
+    "severity": "HIGH",
+    "description": "Kubernetes dashboard exposed publicly"
+  },
+  {
+    "id": "KHV002",
+    "severity": "CRITICAL",
+    "description": "Anonymous access enabled on kubelet"
+  },
+  {
+    "id": "KHV003",
+    "severity": "MEDIUM",
+    "description": "API server accessible externally"
+  }
+]

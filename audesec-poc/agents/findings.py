@@ -32,14 +32,157 @@ def normalize_cves(cves):
 
     return normalized
 
+def normalize_sast(sast_findings):
+
+    normalized = []
+
+    for finding in sast_findings:
+
+        normalized.append({
+
+            "type": "SAST",
+
+            "id": finding.get("id"),
+
+            "severity": finding.get(
+                "severity"
+            ),
+
+            "message": finding.get(
+                "message"
+            ),
+
+            "file": finding.get(
+                "file"
+            )
+        })
+
+    return normalized
+
+def normalize_secrets(secret_findings):
+
+    normalized = []
+
+    for finding in secret_findings:
+
+        normalized.append({
+
+            "type": "SECRET",
+
+            "id": finding.get(
+                "rule"
+            ),
+
+            "severity": finding.get(
+                "severity"
+            ),
+
+            "message": finding.get(
+                "description"
+            ),
+
+            "file": finding.get(
+                "file"
+            )
+        })
+
+    return normalized
+
+def normalize_cspm(cspm_findings):
+
+    normalized = []
+
+    for finding in cspm_findings:
+
+        normalized.append({
+
+            "type": "CSPM",
+
+            "id": finding.get("id"),
+
+            "severity": finding.get(
+                "severity"
+            ),
+
+            "message": finding.get(
+                "message"
+            ),
+
+            "resource": finding.get(
+                "resource"
+            )
+        })
+
+    return normalized
+
+def normalize_runtime(runtime_findings):
+
+    normalized = []
+
+    for finding in runtime_findings:
+
+        normalized.append({
+
+            "type": "RUNTIME",
+
+            "id": finding.get("rule"),
+
+            "severity": finding.get(
+                "severity"
+            ),
+
+            "message": finding.get(
+                "message"
+            )
+        })
+
+    return normalized
+
+def normalize_network(network_findings):
+
+    normalized = []
+
+    for finding in network_findings:
+
+        normalized.append({
+
+            "type": "NETWORK",
+
+            "id": finding.get("id"),
+
+            "severity": finding.get(
+                "severity"
+            ),
+
+            "message": finding.get(
+                "message"
+            )
+        })
+
+    return normalized
 
 def combine_findings(
     k8s_findings,
-    cve_findings
+    cve_findings,
+    sast_findings,
+    secret_findings,
+    cspm_findings,
+    runtime_findings,
+    network_findings
 ):
 
     return (
         normalize_k8s_findings(k8s_findings)
         +
         normalize_cves(cve_findings)
+        +
+        normalize_sast(sast_findings)
+        +
+        normalize_secrets(secret_findings)
+        +
+        normalize_cspm(cspm_findings)
+        +
+        normalize_runtime(runtime_findings)
+        +
+        normalize_network(network_findings)
     )
