@@ -208,49 +208,52 @@ print("\n[bold magenta]=== Unified Findings ===[/bold magenta]\n")
 for finding in combined:
     print(finding)
 
-######## Create JIRA
+######## Create JIRA (disabled)
 
-from agents.jira_agent import (
-    create_jira_ticket
-)
+# from agents.jira_agent import (
+#     create_jira_ticket
+# )
+#
+# print(
+#     "\n[bold yellow]=== Creating JIRA Tickets ===[/bold yellow]\n"
+# )
+#
+# important_findings = [
+#     finding for finding in combined
+#     if finding["severity"] in [
+#         "HIGH",
+#         "CRITICAL"
+#     ]
+# ]
+#
+# jira_tickets = []
+#
+# for finding in important_findings[:5]:
+#
+#     try:
+#
+#         ticket = create_jira_ticket(
+#             finding
+#         )
+#
+#         jira_tickets.append(ticket)
+#
+#         log_activity(
+#            f"Created JIRA ticket {ticket}"
+#         )
+#
+#         print(
+#             f"Created Ticket: {ticket}"
+#         )
+#
+#     except Exception as e:
+#
+#         print(
+#             f"Failed creating ticket: {e}"
+#         )
 
-print(
-    "\n[bold yellow]=== Creating JIRA Tickets ===[/bold yellow]\n"
-)
-
-important_findings = [
-    finding for finding in combined
-    if finding["severity"] in [
-        "HIGH",
-        "CRITICAL"
-    ]
-]
-
+# Kept because it is used in the final report below
 jira_tickets = []
-
-for finding in important_findings[:5]:
-
-    try:
-
-        ticket = create_jira_ticket(
-            finding
-        )
-
-        jira_tickets.append(ticket)
-
-        log_activity(
-           f"Created JIRA ticket {ticket}"
-        )
-
-        print(
-            f"Created Ticket: {ticket}"
-        )
-
-    except Exception as e:
-
-        print(
-            f"Failed creating ticket: {e}"
-        )
 
 ########### Remediation
 
