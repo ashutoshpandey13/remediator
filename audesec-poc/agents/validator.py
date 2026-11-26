@@ -7,7 +7,7 @@ def validate_yaml(file_path):
     try:
 
         with open(file_path, "r") as f:
-            yaml.safe_load(f)
+            list(yaml.safe_load_all(f))
 
         return True
 

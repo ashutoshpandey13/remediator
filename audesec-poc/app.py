@@ -257,8 +257,11 @@ jira_tickets = []
 
 ########### Remediation
 
+import os
+
 from agents.remediation import (
-    generate_remediation
+    generate_remediation,
+    parse_sections
 )
 
 with open(
@@ -273,10 +276,33 @@ with open(
 ) as f:
     package_json = f.read()
 
+with open(
+    "vulnerable-app/Dockerfile",
+    "r"
+) as f:
+    dockerfile = f.read()
+
+SOURCE_FILES = ["app.js", "secrets.py", "vulnerable_code.py"]
+
+source_contents = {}
+
+for name in SOURCE_FILES:
+
+    path = f"vulnerable-app/{name}"
+
+    if os.path.exists(path):
+
+        with open(path, "r") as f:
+            source_contents[name] = f.read()
+
 remediation = generate_remediation(
     combined,
     deployment_yaml,
-    package_json
+    package_json,
+    dockerfile,
+    source_contents.get("app.js", ""),
+    source_contents.get("secrets.py", ""),
+    source_contents.get("vulnerable_code.py", "")
 )
 
 log_activity(
@@ -291,107 +317,42 @@ print(remediation)
 
 ######### save fixed files
 
-import os
-
 os.makedirs("fixed", exist_ok=True)
 
-if "===FIXED_PACKAGE_JSON===" not in remediation:
-    raise Exception(
-        "LLM response format invalid"
-    )
+sections = parse_sections(remediation)
 
-'''
-deployment_parts = remediation.split(
+for required in (
+    "===FIXED_DEPLOYMENT===",
     "===FIXED_PACKAGE_JSON===",
-    1
-)
+    "===FIXED_SOURCE_CODE==="
+):
+    if required not in sections:
+        raise Exception(
+            f"LLM response missing section {required}"
+        )
 
-#fixed_yaml = deployment_parts[0].replace(
-#    "===FIXED_DEPLOYMENT===",
-#    ""
-#).strip()
+# section marker -> file inside fixed/
+SECTION_FILES = {
+    "===FIXED_DEPLOYMENT===": "deployment.yaml",
+    "===FIXED_PACKAGE_JSON===": "package.json",
+    "===FIXED_SOURCE_CODE===": "vulnerable_code.py",
+    "===FIXED_DOCKERFILE===": "Dockerfile",
+    "===FIXED_APP_JS===": "app.js",
+    "===FIXED_SECRETS===": "secrets.py"
+}
 
-fixed_yaml = (
-    deployment_split[0]
-    .replace(
-        "===FIXED_DEPLOYMENT===",
-        ""
-    )
-    .replace("```yaml", "")
-    .replace("```", "")
-    .strip()
-)
+# Remove output of previous runs so stale files are never copied back
+for name in SECTION_FILES.values():
 
-fixed_package_json = deployment_parts[1].strip()
-'''
+    if os.path.exists(f"fixed/{name}"):
+        os.remove(f"fixed/{name}")
 
-if "===FIXED_SOURCE_CODE===" not in remediation:
+for marker, name in SECTION_FILES.items():
 
-    raise Exception(
-        "LLM response missing source code section"
-    )
+    if marker in sections and sections[marker].strip():
 
-deployment_split = remediation.split(
-    "===FIXED_PACKAGE_JSON===",
-    1
-)
-
-fixed_yaml = (
-    deployment_split[0]
-    .replace(
-        "===FIXED_DEPLOYMENT===",
-        ""
-    )
-    .replace("```yaml", "")
-    .replace("```", "")
-    .strip()
-)
-
-remaining = deployment_split[1]
-
-package_split = remaining.split(
-    "===FIXED_SOURCE_CODE===",
-    1
-)
-
-#fixed_package_json = package_split[0].strip()
-
-fixed_package_json = (
-    package_split[0]
-    .replace("```json", "")
-    .replace("```", "")
-    .strip()
-)
-
-#fixed_source_code = package_split[1].strip()
-
-fixed_source_code = (
-    package_split[1]
-    .replace("```python", "")
-    .replace("```", "")
-    .strip()
-)
-
-with open(
-    "fixed/deployment.yaml",
-    "w"
-) as f:
-    f.write(fixed_yaml)
-
-with open(
-    "fixed/package.json",
-    "w"
-) as f:
-    f.write(fixed_package_json)
-
-with open(
-    "fixed/vulnerable_code.py",
-    "w"
-) as f:
-
-    f.write(
-        fixed_source_code
-    )
+        with open(f"fixed/{name}", "w") as f:
+            f.write(sections[marker].strip() + "\n")
 
 ####### validate generated files
 
@@ -451,39 +412,113 @@ for package, version in dependencies.items():
             f"{package}@{version}"
         )
 
+####### code / package.json consistency (prevents "Cannot find module" crashes)
+
+import re
+import subprocess
+
+print("\n=== REQUIRE / DEPENDENCY CONSISTENCY ===\n")
+
+if os.path.exists("fixed/app.js"):
+
+    with open("fixed/app.js", "r") as f:
+        app_js_text = f.read()
+
+    node_builtins = set(
+        json.loads(
+            subprocess.run(
+                [
+                    "node",
+                    "-e",
+                    "console.log(JSON.stringify(require('module').builtinModules))"
+                ],
+                capture_output=True,
+                text=True
+            ).stdout or "[]"
+        )
+    )
+
+    required = set(
+        re.findall(
+            r"require\(\s*['\"]([^'\"]+)['\"]\s*\)",
+            app_js_text
+        )
+    )
+
+    required |= set(
+        re.findall(
+            r"from\s+['\"]([^'\"]+)['\"]",
+            app_js_text
+        )
+    )
+
+    missing = []
+
+    for module in sorted(required):
+
+        if module.startswith((".", "/", "node:")):
+            continue
+
+        # "@scope/pkg/sub" -> "@scope/pkg", "pkg/sub" -> "pkg"
+        parts = module.split("/")
+        top = "/".join(parts[:2]) if module.startswith("@") else parts[0]
+
+        if top in node_builtins or top in dependencies:
+            continue
+
+        missing.append(top)
+
+    print(
+        "app.js requires:",
+        sorted(required)
+    )
+
+    if missing:
+
+        raise Exception(
+            "fixed/app.js requires packages missing from "
+            f"fixed/package.json: {missing}"
+        )
+
+    print("OK: every require() is declared in package.json")
+
 ############ Rebuild Image
 
 import shutil
 import subprocess
 
-shutil.copy(
-    "vulnerable-app/package.json",
-    "vulnerable-app/package.json.bak"
-)
+# Back up each original, then place the fixed version in the build context
+APPLIED_FILES = [
+    name for name in SECTION_FILES.values()
+    if os.path.exists(f"fixed/{name}")
+    and name != "deployment.yaml"
+]
 
-shutil.copy(
-    "fixed/package.json",
-    "vulnerable-app/package.json"
-)
+for name in APPLIED_FILES:
 
-shutil.copy(
-    "vulnerable-app/vulnerable_code.py",
-    "vulnerable-app/vulnerable_code.py.bak"
-)
+    if os.path.exists(f"vulnerable-app/{name}"):
 
-shutil.copy(
-    "fixed/vulnerable_code.py",
-    "vulnerable-app/vulnerable_code.py"
-)
+        shutil.copy(
+            f"vulnerable-app/{name}",
+            f"vulnerable-app/{name}.bak"
+        )
+
+    shutil.copy(
+        f"fixed/{name}",
+        f"vulnerable-app/{name}"
+    )
 
 print("\n=== REBUILDING IMAGE ===\n")
+
+# Explicit tag so a stale "remediated-node-app:latest" is never scanned
+FIXED_IMAGE = "remediated-node-app:fixed"
 
 build_result = subprocess.run(
     [
         "docker",
         "build",
         "-t",
-        "remediated-node-app",
+        FIXED_IMAGE,
         "./vulnerable-app"
     ],
     capture_output=True,
@@ -505,7 +540,7 @@ log_activity(
 ########## Re-scan fixed image
 
 fixed_image_scan = scan_image(
-    "remediated-node-app"
+    FIXED_IMAGE
 )
 
 fixed_cves = summarize_cves(
@@ -552,27 +587,42 @@ print(
     f"Fixed Misconfigs: {len(fixed_k8s_findings)}"
 )
 
-shutil.copy(
-    "vulnerable-app/package.json.bak",
-    "vulnerable-app/package.json"
-)
+# Put the original files back (the fixed ones stay in fixed/)
+# Runtime validation below uses the already built fixed image
+for name in APPLIED_FILES:
 
-shutil.copy(
-    "vulnerable-app/vulnerable_code.py.bak",
-    "vulnerable-app/vulnerable_code.py"
-)
+    if os.path.exists(f"vulnerable-app/{name}.bak"):
+
+        shutil.copy(
+            f"vulnerable-app/{name}.bak",
+            f"vulnerable-app/{name}"
+        )
 
 ################# Runtime validation
 
 print("\n=== RUNTIME VALIDATION ===\n")
 
+# Named container so it can be removed reliably afterwards
+subprocess.run(
+    ["docker", "rm", "-f", "remediated-health-check"],
+    capture_output=True
+)
+
 container = subprocess.Popen([
     "docker",
     "run",
     "--rm",
+    "--name",
+    "remediated-health-check",
     "-p",
     "3005:3000",
-    "remediated-node-app"
+    # Secrets are no longer hardcoded, so the fixed app needs them at runtime.
+    # These are throw-away test values for this health check only.
+    "-e",
+    "JWT_SECRET=healthcheck-only-secret",
+    "-e",
+    "CORS_ORIGIN=http://localhost:3005",
+    FIXED_IMAGE
 ])
 
 import time
@@ -593,6 +643,11 @@ print(
 )
 
 container.kill()
+
+subprocess.run(
+    ["docker", "rm", "-f", "remediated-health-check"],
+    capture_output=True
+)
 
 log_activity(
     "Runtime health validation passed"
