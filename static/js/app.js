@@ -146,59 +146,109 @@ function updateStep(progress) {
 }
 
 function formatStepData(step, data) {
-    switch (step) {
-        case 1:
-            return data.repo_name ? `(${data.repo_name})` : '';
-        case 3:
-            return data.files ? `(${data.files.join(', ')})` : '';
-        case 4:
-            return data.count !== undefined ? `(${data.count} issues)` : '';
-        case 5:
-            return data.cve_count !== undefined ? `(${data.cve_count} CVEs)` : '';
-        case 6:
-            return (data.k8s !== undefined && data.cve !== undefined) ? `(K8s: ${data.k8s}, CVE: ${data.cve})` : '';
-        case 7:
-            return data.tickets ? `(${data.tickets.join(', ')})` : '';
-        case 9:
-            return data.files ? `(${data.files.join(', ')})` : '';
-        case 12:
-            return data.new_cve_count !== undefined ? `(${data.new_cve_count} CVEs remaining)` : '';
-        case 13:
-            return (data.new_k8s_count !== undefined && data.new_cve_count !== undefined) ? `(K8s: ${data.new_k8s_count}, CVE: ${data.new_cve_count})` : '';
-        default:
-            return '';
-    }
+    // The server sends a ready-made summary in `detail` for every step
+    return data && typeof data.detail === 'string' ? data.detail : '';
+}
+
+const METRIC_CARDS = [
+    { key: 'total', title: 'Total Issues', icon: '🎯', cls: 'total' },
+    { key: 'kubernetes', title: 'Kubernetes Issues', icon: '☸️', cls: 'k8s' },
+    { key: 'cve', title: 'CVE Vulnerabilities', icon: '🔒', cls: 'cve' },
+    { key: 'sast', title: 'Code Vulnerabilities (SAST)', icon: '🧬', cls: 'sast' },
+    { key: 'secrets', title: 'Hardcoded Secrets', icon: '🔑', cls: 'secrets' }
+];
+
+const ADVISORY_CARDS = [
+    { key: 'cspm', title: 'Cloud Posture (CSPM)', icon: '☁️' },
+    { key: 'runtime', title: 'Runtime Security', icon: '🏃' },
+    { key: 'network', title: 'Network Exposure', icon: '🌐' }
+];
+
+function createEl(tag, className, text) {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text !== undefined) el.textContent = text;
+    return el;
+}
+
+function createMetricBox(label, value, className) {
+    const box = createEl('div', className);
+    box.appendChild(createEl('span', 'label', label));
+    box.appendChild(createEl('span', 'value', value));
+    return box;
+}
+
+function createMetricCard(def, metric) {
+    const card = createEl('div', 'metric-card ' + def.cls);
+
+    const header = createEl('div', 'metric-header');
+    header.appendChild(createEl('h3', null, def.title));
+    header.appendChild(createEl('div', 'metric-icon', def.icon));
+    card.appendChild(header);
+
+    const body = createEl('div', 'metric-body');
+
+    const comparison = createEl('div', 'metric-comparison');
+    comparison.appendChild(createMetricBox('Before', metric.before, 'metric-before'));
+    comparison.appendChild(createEl('div', 'metric-arrow', '→'));
+    comparison.appendChild(createMetricBox('After', metric.after, 'metric-after'));
+    body.appendChild(comparison);
+
+    const improvement = createEl('div', 'metric-improvement');
+    improvement.appendChild(createEl('span', 'improvement-label', 'Fixed:'));
+    improvement.appendChild(createEl('span', 'improvement-value', metric.fixed));
+    improvement.appendChild(createEl('span', 'improvement-percent', metric.improvement + '%'));
+    body.appendChild(improvement);
+
+    card.appendChild(body);
+    return card;
+}
+
+function createAdvisoryCard(def, count) {
+    const card = createEl('div', 'advisory-card');
+    card.appendChild(createEl('div', 'advisory-icon', def.icon));
+    card.appendChild(createEl('div', 'advisory-count', count));
+    card.appendChild(createEl('div', 'advisory-title', def.title));
+    return card;
 }
 
 function showResults(metrics) {
     // Hide progress, show results
     scanProgress.style.display = 'none';
     scanResults.style.display = 'block';
-    
-    // Update metrics
+
+    const grid = document.getElementById('metricsGrid');
+    const advisorySection = document.getElementById('advisorySection');
+    const advisoryGrid = document.getElementById('advisoryGrid');
+
+    grid.replaceChildren();
+    advisoryGrid.replaceChildren();
+    advisorySection.style.display = 'none';
+
     if (metrics) {
-        // Total
-        document.getElementById('totalBefore').textContent = metrics.total.before;
-        document.getElementById('totalAfter').textContent = metrics.total.after;
-        document.getElementById('totalFixed').textContent = metrics.total.fixed;
-        document.getElementById('totalPercent').textContent = metrics.total.improvement + '%';
-        
-        // Kubernetes
-        document.getElementById('k8sBefore').textContent = metrics.kubernetes.before;
-        document.getElementById('k8sAfter').textContent = metrics.kubernetes.after;
-        document.getElementById('k8sFixed').textContent = metrics.kubernetes.fixed;
-        document.getElementById('k8sPercent').textContent = metrics.kubernetes.improvement + '%';
-        
-        // CVE
-        document.getElementById('cveBefore').textContent = metrics.cve.before;
-        document.getElementById('cveAfter').textContent = metrics.cve.after;
-        document.getElementById('cveFixed').textContent = metrics.cve.fixed;
-        document.getElementById('cvePercent').textContent = metrics.cve.improvement + '%';
+        // Scanners that could not run have no entry in metrics and are skipped
+        METRIC_CARDS.forEach(def => {
+            if (metrics[def.key]) {
+                grid.appendChild(createMetricCard(def, metrics[def.key]));
+            }
+        });
+
+        if (metrics.advisory) {
+            let any = false;
+            ADVISORY_CARDS.forEach(def => {
+                const count = metrics.advisory[def.key];
+                if (count) {
+                    any = true;
+                    advisoryGrid.appendChild(createAdvisoryCard(def, count));
+                }
+            });
+            if (any) advisorySection.style.display = 'block';
+        }
     }
-    
+
     // Scroll to results
     scanResults.scrollIntoView({ behavior: 'smooth' });
-    
+
     // Reset form
     resetForm();
 }
@@ -207,35 +257,9 @@ function resetSteps() {
     const steps = document.querySelectorAll('.step');
     steps.forEach(step => {
         step.classList.remove('running', 'success', 'error', 'info');
-        const statusElement = step.querySelector('.step-status');
-        statusElement.textContent = '⏳';
-        
-        // Reset message to default
-        const stepNum = parseInt(step.dataset.step);
-        const messageElement = step.querySelector('.step-message');
-        messageElement.textContent = getDefaultMessage(stepNum);
+        step.querySelector('.step-status').textContent = '⏳';
+        step.querySelector('.step-message').textContent = step.dataset.defaultMessage || 'Processing...';
     });
-}
-
-function getDefaultMessage(step) {
-    const messages = {
-        0: 'Preparing environment...',
-        1: 'Loading repository configuration...',
-        2: 'Cloning repository...',
-        3: 'Discovering files...',
-        4: 'Scanning Kubernetes configurations...',
-        5: 'Building and scanning container image...',
-        6: 'Analyzing security findings...',
-        7: 'Creating tracking tickets...',
-        8: 'Generating fixes with AI...',
-        9: 'Applying security fixes...',
-        10: 'Validating fixed files...',
-        11: 'Updating Dockerfile...',
-        12: 'Rebuilding container image...',
-        13: 'Re-scanning fixed assets...',
-        14: 'Calculating improvement metrics...'
-    };
-    return messages[step] || 'Processing...';
 }
 
 function resetForm() {

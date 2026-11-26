@@ -17,6 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     apt-transport-https \
     lsb-release \
+    nodejs \
+    npm \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Docker CLI (for building images during scans)
@@ -32,6 +34,23 @@ RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --
     && apt-get update \
     && apt-get install -y --no-install-recommends trivy \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Gitleaks secret scanner (pinned release, checksum verified)
+ARG GITLEAKS_VERSION=8.30.1
+RUN set -eux; \
+    case "$(dpkg --print-architecture)" in \
+        amd64) GL_ARCH=x64 ;; \
+        arm64) GL_ARCH=arm64 ;; \
+        *) echo "unsupported architecture" >&2; exit 1 ;; \
+    esac; \
+    BASE="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"; \
+    TARBALL="gitleaks_${GITLEAKS_VERSION}_linux_${GL_ARCH}.tar.gz"; \
+    curl -fsSL -o "/tmp/${TARBALL}" "${BASE}/${TARBALL}"; \
+    curl -fsSL -o /tmp/gitleaks_checksums.txt "${BASE}/gitleaks_${GITLEAKS_VERSION}_checksums.txt"; \
+    (cd /tmp && grep " ${TARBALL}\$" gitleaks_checksums.txt | sha256sum -c -); \
+    tar -xzf "/tmp/${TARBALL}" -C /usr/local/bin gitleaks; \
+    rm -f "/tmp/${TARBALL}" /tmp/gitleaks_checksums.txt; \
+    gitleaks version
 
 # Install GitHub CLI (optional, for PR creation)
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg \

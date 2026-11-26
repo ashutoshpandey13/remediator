@@ -48,3 +48,9 @@ reports/*.json
 # OS files
 Thumbs.db
 .DS_Store
+
+# Environment files (contain secrets)
+.env
+.env.local
+.env.*.local
+!.env.example

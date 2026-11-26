@@ -333,6 +333,16 @@ header h1 {
     color: white;
 }
 
+.metric-card.sast {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: #14532d;
+}
+
+.metric-card.secrets {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
 .metric-header {
     display: flex;
     justify-content: space-between;
@@ -458,3 +468,50 @@ header h1 {
     100% { transform: rotate(360deg); }
 }
 
+
+.advisory-section {
+    margin-top: 10px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.advisory-section h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.advisory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.advisory-card {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    border-left: 4px solid #17a2b8;
+}
+
+.advisory-icon {
+    font-size: 1.8rem;
+}
+
+.advisory-count {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.advisory-title {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.advisory-note {
+    margin-top: 15px;
+    color: #666;
+    font-size: 0.85rem;
+}

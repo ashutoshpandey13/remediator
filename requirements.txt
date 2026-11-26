@@ -9,6 +9,9 @@ flask-socketio>=5.3.0
 python-socketio>=5.10.0
 eventlet>=0.33.0
 
+# SAST scanner (the gitleaks binary for secret scanning is installed separately)
+semgrep>=1.100.0
+
 # JIRA integration (optional)
 jira>=3.5.0
 

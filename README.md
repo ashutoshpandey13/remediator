@@ -35,8 +35,29 @@ AudeSec-POC automates the entire security remediation workflow:
 - Python 3.8+
 - Docker
 - Trivy (security scanner)
+- Semgrep (SAST) - installed via `requirements.txt`
+- Gitleaks (secret scanning)
+- Node.js / npm (validates remediated `package.json` dependencies; optional)
 - Git
 - GitHub CLI (`gh`) - for PR creation
+
+### Supported Scanners
+
+| Scanner | Tool | Source |
+|---------|------|--------|
+| Kubernetes misconfigurations | Trivy | `deployment.yaml` in the repo |
+| Container image CVEs | Trivy | image built from the repo `Dockerfile` |
+| SAST (code vulnerabilities) | Semgrep | repo source code |
+| Secrets | Gitleaks | repo source code (values are redacted) |
+| Cloud posture (CSPM) | JSON feed | file named by `CSPM_FINDINGS_PATH` |
+| Runtime security | JSON feed | file named by `RUNTIME_FINDINGS_PATH` |
+| Network exposure | JSON feed | file named by `NETWORK_FINDINGS_PATH` |
+
+A scanner that is not installed is skipped and reported in the UI; the rest of the scan continues.
+SAST and secret findings are fixed in the cloned source files; CSPM, runtime and network findings
+cannot be fixed in the repository, so recommendations are written to `reports/advisory.md`.
+The CSPM / runtime / network scanners read JSON exports (Prowler, Falco, kube-hunter, ...) and are
+skipped until their environment variable points at a file.
 
 ## 🚀 How to Run
 
