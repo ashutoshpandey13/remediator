@@ -77,9 +77,6 @@ security-remediation-*/
 # Reports (will be mounted as volume)
 reports/*.json
 
-# Fixed files (will be mounted as volume)
-fixed/
-
 # Node modules (if any)
 node_modules/
 

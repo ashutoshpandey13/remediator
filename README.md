@@ -79,7 +79,6 @@ docker run -d \
   -p 8000:8000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v $(pwd)/reports:/app/reports \
-  -v $(pwd)/fixed:/app/fixed \
   audesec-platform
 
 # 4. Access the web UI
@@ -157,7 +156,6 @@ docker run -d \
   -p 8000:8000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v $(pwd)/reports:/app/reports \
-  -v $(pwd)/fixed:/app/fixed \
   -e OPENAI_API_KEY=your_custom_key \
   -e GITHUB_TOKEN=your_custom_token \
   -e JIRA_URL=https://your-domain.atlassian.net \
@@ -332,7 +330,6 @@ audesec-poc/
 ├── Dockerfile
 ├── .env                        # Environment variables (create this)
 ├── reports/                    # Scan reports (auto-generated)
-├── fixed/                      # Example remediated files
 └── cloned_repo/                # Cloned repository (auto-generated)
 ```
 

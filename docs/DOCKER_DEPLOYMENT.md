@@ -31,7 +31,6 @@ docker run -d \
   -p 8000:8000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v $(pwd)/reports:/app/reports \
-  -v $(pwd)/fixed:/app/fixed \
   -e OPENAI_API_KEY=your_openai_api_key_here \
   -e GITHUB_TOKEN=your_github_token_here \
   audesec-platform
@@ -91,7 +90,6 @@ docker run -d \
   -p 8000:8000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v $(pwd)/reports:/app/reports \
-  -v $(pwd)/fixed:/app/fixed \
   -e OPENAI_API_KEY=your_key \
   -e GITHUB_TOKEN=your_token \
   -e JIRA_URL=https://your-domain.atlassian.net \
@@ -172,7 +170,6 @@ The container uses the following volumes:
 |-----------|---------------|---------|
 | `/var/run/docker.sock` | `/var/run/docker.sock` | Docker socket for building images |
 | `./reports` | `/app/reports` | Scan reports persistence |
-| `./fixed` | `/app/fixed` | Fixed files persistence |
 
 ## 🔧 Configuration
 

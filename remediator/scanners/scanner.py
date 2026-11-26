@@ -1,7 +1,10 @@
+import os
 import subprocess
 import json
 
 def scan_k8s_config(file_path: str):
+
+    os.makedirs("reports", exist_ok=True)
 
     output_file = "reports/k8s_scan.json"
 

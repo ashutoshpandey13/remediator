@@ -39,7 +39,7 @@ cloned_repo/
 security-remediation-*/
 
 # Reports (generated at runtime)
-reports/*.json
+reports/
 
 # Backup files
 *.bak

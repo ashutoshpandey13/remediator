@@ -1,8 +1,11 @@
+import os
 import subprocess
 import json
 
 
 def scan_image(image_name: str):
+
+    os.makedirs("reports", exist_ok=True)
 
     output_file = "reports/image_scan.json"
 

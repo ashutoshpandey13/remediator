@@ -75,7 +75,7 @@ COPY .env* ./
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p reports fixed cloned_repo
+RUN mkdir -p reports cloned_repo
 
 # Set proper permissions
 RUN chmod +x scripts/start_web_ui.sh || true
