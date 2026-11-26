@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-from agents.bob_client import call_bob
+from remediator.remediation.bob_client import call_bob
 
 load_dotenv()
 

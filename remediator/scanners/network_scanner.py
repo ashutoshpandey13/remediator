@@ -1,4 +1,4 @@
-from agents.feed_loader import load_feed
+from remediator.scanners.feed_loader import load_feed
 
 
 def scan_network():

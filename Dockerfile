@@ -75,10 +75,10 @@ COPY .env* ./
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p reports fixed cloned_repo static/css static/js templates
+RUN mkdir -p reports fixed cloned_repo
 
 # Set proper permissions
-RUN chmod +x start_web_ui.sh || true
+RUN chmod +x scripts/start_web_ui.sh || true
 
 # Create non-root user (but don't switch to it by default for Docker socket access)
 RUN useradd -m -u 1000 audesec && \
@@ -92,4 +92,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:8000/ || exit 1
 
 # Run the application
-CMD ["python", "web_app.py"]
+CMD ["python", "-m", "remediator.web.app"]

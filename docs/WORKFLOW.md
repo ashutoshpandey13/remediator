@@ -13,7 +13,7 @@
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                    STEP 1: CLONE REPOSITORY                      │
-│  Module: agents/git_operations.py                               │
+│  Module: remediator/integrations/git_operations.py                               │
 │  Function: clone_repository()                                   │
 │  • Clones Git repository to local directory                     │
 │  • Removes existing clone if present                            │
@@ -34,7 +34,7 @@
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │              STEP 3: KUBERNETES SECURITY SCAN                    │
-│  Module: agents/scanner.py                                      │
+│  Module: remediator/scanners/scanner.py                                      │
 │  Functions: scan_k8s_config() → summarize_findings()            │
 │  • Runs Trivy config scan on deployment.yaml                    │
 │  • Extracts misconfigurations                                   │
@@ -45,7 +45,7 @@
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │              STEP 4: CONTAINER IMAGE CVE SCAN                    │
-│  Module: agents/image_scanner.py                                │
+│  Module: remediator/scanners/image_scanner.py                                │
 │  Functions: scan_image() → summarize_cves()                     │
 │  • Builds Docker image from Dockerfile                          │
 │  • Runs Trivy image scan                                        │
@@ -57,7 +57,7 @@
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                STEP 5: COMBINE & NORMALIZE FINDINGS              │
-│  Module: agents/findings.py                                     │
+│  Module: remediator/findings.py                                     │
 │  Function: combine_findings()                                   │
 │  • Normalizes K8s findings (type: MISCONFIG)                    │
 │  • Normalizes CVE findings (type: CVE)                          │
@@ -69,7 +69,7 @@
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                STEP 6: JIRA TICKET CREATION                      │
-│  Module: agents/jira_agent.py                                   │
+│  Module: remediator/integrations/jira_agent.py                                   │
 │  Function: create_jira_ticket()                                 │
 │  • Creates tickets for HIGH/CRITICAL issues (max 5)             │
 │  • Includes vulnerability details                               │
@@ -80,7 +80,7 @@
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │              STEP 7: AI-POWERED REMEDIATION                      │
-│  Module: agents/remediation.py                                  │
+│  Module: remediator/remediation/remediation.py                                  │
 │  Function: generate_remediation()                               │
 │  • Sends findings + files to OpenAI GPT-4.1-mini                │
 │  • AI generates fixed deployment.yaml                           │
@@ -92,7 +92,7 @@
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                STEP 8: APPLY REMEDIATION                         │
-│  Module: app.py (main workflow)                                 │
+│  Module: remediator/cli.py (main workflow)                                 │
 │  • Parses AI response                                           │
 │  • Writes fixed deployment.yaml to repository                   │
 │  • Writes fixed package.json to repository                      │
@@ -102,7 +102,7 @@
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                    STEP 9: VALIDATION                            │
-│  Module: agents/validator.py                                    │
+│  Module: remediator/validation/validator.py                                    │
 │  Functions: validate_yaml(), validate_package_json()            │
 │  • Validates YAML syntax                                        │
 │  • Validates JSON syntax                                        │
@@ -113,7 +113,7 @@
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │              STEP 10: GIT BRANCH & COMMIT                        │
-│  Module: agents/git_operations.py                               │
+│  Module: remediator/integrations/git_operations.py                               │
 │  Functions: create_branch(), commit_changes()                   │
 │  • Creates new branch (e.g., security-remediation)              │
 │  • Stages all changes                                           │
@@ -124,7 +124,7 @@
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │              STEP 11: PUSH & CREATE PULL REQUEST                 │
-│  Module: agents/git_operations.py                               │
+│  Module: remediator/integrations/git_operations.py                               │
 │  Functions: push_branch(), create_pull_request()                │
 │  • Pushes branch to remote repository                           │
 │  • Creates PR via GitHub CLI                                    │
@@ -136,7 +136,7 @@
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │              STEP 12: REBUILD CONTAINER IMAGE                    │
-│  Module: app.py (main workflow)                                 │
+│  Module: remediator/cli.py (main workflow)                                 │
 │  • Builds new Docker image with fixed files                     │
 │  • Tags as remediated-{repo-name}                               │
 │  Output: New container image                                    │
@@ -145,7 +145,7 @@
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │              STEP 13: RE-SCAN FIXED ASSETS                       │
-│  Modules: agents/scanner.py, agents/image_scanner.py            │
+│  Modules: remediator/scanners/scanner.py, remediator/scanners/image_scanner.py            │
 │  • Re-scans fixed deployment.yaml                               │
 │  • Re-scans remediated container image                          │
 │  • Compares before/after metrics                                │
@@ -155,7 +155,7 @@
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │              STEP 14: SECURITY IMPROVEMENT REPORT                │
-│  Module: app.py (main workflow)                                 │
+│  Module: remediator/cli.py (main workflow)                                 │
 │  • Calculates CVE reduction                                     │
 │  • Calculates misconfiguration reduction                        │
 │  • Computes improvement percentage                              │
@@ -181,7 +181,7 @@
 - **Input**: User input or environment variables
 - **Output**: RepoConfig object and file paths dictionary
 
-### 2. **agents/git_operations.py**
+### 2. **remediator/integrations/git_operations.py**
 - **Purpose**: Git operations and PR management
 - **Key Functions**:
   - `clone_repository()`: Clones Git repository
@@ -193,7 +193,7 @@
 - **Dependencies**: Git, GitHub CLI
 - **Output**: Repository path, branch name, PR URL
 
-### 3. **agents/scanner.py**
+### 3. **remediator/scanners/scanner.py**
 - **Purpose**: Kubernetes configuration security scanning
 - **Key Functions**:
   - `scan_k8s_config()`: Runs Trivy config scan
@@ -202,7 +202,7 @@
 - **Input**: Path to deployment.yaml
 - **Output**: List of misconfigurations with severity
 
-### 4. **agents/image_scanner.py**
+### 4. **remediator/scanners/image_scanner.py**
 - **Purpose**: Container image vulnerability scanning
 - **Key Functions**:
   - `scan_image()`: Runs Trivy image scan
@@ -211,7 +211,7 @@
 - **Input**: Docker image name
 - **Output**: List of CVEs with package details
 
-### 5. **agents/findings.py**
+### 5. **remediator/findings.py**
 - **Purpose**: Normalize and combine security findings
 - **Key Functions**:
   - `normalize_k8s_findings()`: Standardizes K8s findings
@@ -220,7 +220,7 @@
 - **Input**: K8s findings and CVE findings
 - **Output**: Unified findings list
 
-### 6. **agents/jira_agent.py**
+### 6. **remediator/integrations/jira_agent.py**
 - **Purpose**: JIRA ticket creation for tracking
 - **Key Functions**:
   - `create_jira_ticket()`: Creates JIRA issue
@@ -228,7 +228,7 @@
 - **Input**: Finding object
 - **Output**: JIRA ticket ID
 
-### 7. **agents/remediation.py**
+### 7. **remediator/remediation/remediation.py**
 - **Purpose**: AI-powered security remediation
 - **Key Functions**:
   - `generate_remediation()`: Uses OpenAI to fix issues
@@ -236,7 +236,7 @@
 - **Input**: Findings, deployment.yaml, package.json
 - **Output**: Fixed file contents
 
-### 8. **agents/validator.py**
+### 8. **remediator/validation/validator.py**
 - **Purpose**: Validate generated files
 - **Key Functions**:
   - `validate_yaml()`: Validates YAML syntax
@@ -244,7 +244,7 @@
 - **Input**: File paths
 - **Output**: Boolean validation status
 
-### 9. **app.py**
+### 9. **remediator/cli.py**
 - **Purpose**: Main orchestration workflow
 - **Responsibilities**:
   - Coordinates all modules

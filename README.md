@@ -110,7 +110,7 @@ cp .env.example .env
 nano .env  # or use your preferred editor
 
 # 4. Run the web application
-python web_app.py
+python -m remediator.web.app
 
 # 5. Access at: http://localhost:5000
 ```
@@ -135,10 +135,10 @@ For automation or scripting:
 
 ```bash
 # Using Docker
-docker exec -it audesec python app.py
+docker exec -it audesec python -m remediator.cli
 
 # Or locally (after activating venv if used)
-python app.py
+python -m remediator.cli
 ```
 
 The CLI will prompt you for the repository URL and guide you through the process.
@@ -292,22 +292,48 @@ docker exec -it audesec bash
 
 ```
 audesec-poc/
-├── app.py                      # Main application (new workflow)
-├── config.py                   # Configuration management
+├── remediator/                 # Python package (all application code)
+│   ├── cli.py                  # Command-line workflow  (python -m remediator.cli)
+│   ├── config.py               # Configuration management
+│   ├── findings.py             # Findings normalization
+│   ├── logger.py               # Activity logging
+│   ├── scanners/               # Everything that detects issues
+│   │   ├── scanner.py          #   Kubernetes config scanner (Trivy)
+│   │   ├── image_scanner.py    #   Container image scanner (Trivy)
+│   │   ├── sast_scanner.py     #   Code scanner (Semgrep)
+│   │   ├── secret_scanner.py   #   Secret scanner (Gitleaks)
+│   │   ├── cspm_scanner.py     #   Cloud posture feed
+│   │   ├── runtime_scanner.py  #   Runtime security feed
+│   │   ├── network_scanner.py  #   Network exposure feed
+│   │   └── feed_loader.py      #   JSON feed loader
+│   ├── remediation/            # AI-powered fixing
+│   │   ├── bob_client.py       #   LLM client
+│   │   ├── remediation.py      #   K8s / package.json fixes
+│   │   ├── source_remediation.py
+│   │   ├── dockerfile_remediation.py
+│   │   └── advisory.py         #   Recommendations for non-repo findings
+│   ├── validation/             # Checks on fixed files
+│   │   ├── validator.py
+│   │   └── dependency_validator.py
+│   ├── integrations/           # External systems
+│   │   ├── git_operations.py   #   Git & PR operations
+│   │   └── jira_agent.py       #   JIRA integration
+│   ├── web/                    # Flask + Socket.IO backend (python -m remediator.web.app)
+│   │   └── app.py
+│   └── legacy/                 # Older CLI variant kept for reference
+│       └── app_new.py
+├── remediator-ui/              # Frontend (served by the Flask backend)
+│   ├── templates/index.html
+│   └── static/                 # css/ and js/
+├── scripts/start_web_ui.sh     # Local startup helper
+├── docs/                       # Extra guides (setup, workflow, web UI, Docker)
+├── sample_data/                # Example CSPM / runtime / network JSON feeds
 ├── requirements.txt            # Python dependencies
+├── Dockerfile
 ├── .env                        # Environment variables (create this)
-├── agents/
-│   ├── scanner.py             # Kubernetes config scanner
-│   ├── image_scanner.py       # Container image scanner
-│   ├── findings.py            # Findings normalization
-│   ├── jira_agent.py          # JIRA integration
-│   ├── remediation.py         # AI remediation engine
-│   ├── validator.py           # File validation
-│   └── git_operations.py      # Git & PR operations (new)
 ├── reports/                    # Scan reports (auto-generated)
-│   ├── k8s_scan.json
-│   └── image_scan.json
-└── cloned_repo/               # Cloned repository (auto-generated)
+├── fixed/                      # Example remediated files
+└── cloned_repo/                # Cloned repository (auto-generated)
 ```
 
 ## 🔒 Security Best Practices

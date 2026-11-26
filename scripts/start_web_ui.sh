@@ -2,6 +2,9 @@
 
 # AudeSec Web UI Startup Script
 
+# Always run from the project root, regardless of where the script is invoked
+cd "$(dirname "$0")/.." || exit 1
+
 echo "🛡️  AudeSec Security Remediation Platform"
 echo "=========================================="
 echo ""
@@ -54,4 +57,4 @@ echo "Press Ctrl+C to stop the server"
 echo ""
 
 # Start the web application
-python web_app.py
+python -m remediator.web.app

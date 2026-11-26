@@ -220,7 +220,7 @@ gh auth status
 source venv/bin/activate  # or venv\Scripts\activate on Windows
 
 # Run the application
-python app.py
+python -m remediator.cli
 ```
 
 You'll be prompted to enter:
@@ -233,7 +233,7 @@ You'll be prompted to enter:
 export REPO_URL=https://github.com/your-org/your-repo.git
 
 # Run the application
-python app.py
+python -m remediator.cli
 ```
 
 ### Option 3: With Custom Paths
@@ -245,7 +245,7 @@ export PACKAGE_JSON_PATH=backend/package.json
 export DOCKERFILE_PATH=docker/Dockerfile
 export BRANCH_NAME=security-fixes
 
-python app.py
+python -m remediator.cli
 ```
 
 ---
@@ -286,24 +286,23 @@ After the script completes:
 
 ```
 audesec-poc/
-├── app.py                      # Main application (run this)
-├── config.py                   # Configuration handler
-├── .env                        # Your environment variables (DO NOT COMMIT)
-├── .env.example               # Template for .env
-├── requirements.txt           # Python dependencies
-├── README.md                  # Project documentation
-├── SETUP_GUIDE.md            # This file
-├── WORKFLOW.md               # Detailed workflow documentation
+├── remediator/               # Application package (see README.md for the full tree)
+│   ├── cli.py                # Main CLI workflow (run: python -m remediator.cli)
+│   ├── config.py             # Configuration handler
+│   ├── scanners/             # K8s, image, SAST, secret and feed scanners
+│   ├── remediation/          # AI remediation
+│   ├── validation/           # File validators
+│   ├── integrations/         # Git/PR and JIRA
+│   └── web/                  # Web backend (run: python -m remediator.web.app)
+├── remediator-ui/            # Frontend (HTML/CSS/JS)
+├── scripts/start_web_ui.sh   # Local startup helper
+├── docs/                     # Guides (this file, WORKFLOW.md, ...)
+├── .env                      # Your environment variables (DO NOT COMMIT)
+├── .env.example              # Template for .env
+├── requirements.txt          # Python dependencies
+├── README.md                 # Project documentation
 ├── venv/                     # Virtual environment (created by you)
-├── agents/
-│   ├── scanner.py            # K8s scanner
-│   ├── image_scanner.py      # Image scanner
-│   ├── findings.py           # Findings processor
-│   ├── jira_agent.py         # JIRA integration
-│   ├── remediation.py        # AI remediation
-│   ├── validator.py          # File validator
-│   └── git_operations.py     # Git & PR operations
-├── reports/                   # Scan reports (auto-generated)
+├── reports/                  # Scan reports (auto-generated)
 │   ├── k8s_scan.json
 │   └── image_scan.json
 └── cloned_repo/              # Cloned repository (auto-generated)
@@ -382,7 +381,7 @@ gh pr create --title "Security Fixes" --body "Automated security remediation"
 ## 🎯 Example Run
 
 ```bash
-$ python app.py
+$ python -m remediator.cli
 
 ═══ STEP 1: Repository Configuration ═══
 Enter Git repository URL: https://github.com/example/vulnerable-app.git

@@ -4,10 +4,10 @@ import subprocess
 import time
 
 # Import configuration
-from config import get_repo_config_from_input, find_files_in_repo
+from remediator.config import get_repo_config_from_input, find_files_in_repo
 
 # Import Git operations
-from agents.git_operations import (
+from remediator.integrations.git_operations import (
     clone_repository,
     create_branch,
     commit_changes,
@@ -19,13 +19,13 @@ from agents.git_operations import (
 )
 
 # Import scanning agents
-from agents.scanner import scan_k8s_config, summarize_findings
-from agents.image_scanner import scan_image, summarize_cves
-from agents.findings import combine_findings
-from agents.jira_agent import create_jira_ticket
-from agents.remediation import generate_remediation
-from agents.validator import validate_yaml, validate_package_json
-from agents.dockerfile_remediation import update_dockerfile
+from remediator.scanners.scanner import scan_k8s_config, summarize_findings
+from remediator.scanners.image_scanner import scan_image, summarize_cves
+from remediator.findings import combine_findings
+from remediator.integrations.jira_agent import create_jira_ticket
+from remediator.remediation.remediation import generate_remediation
+from remediator.validation.validator import validate_yaml, validate_package_json
+from remediator.remediation.dockerfile_remediation import update_dockerfile
 
 
 def main():

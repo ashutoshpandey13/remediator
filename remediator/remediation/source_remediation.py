@@ -4,8 +4,8 @@ from collections import Counter
 
 from dotenv import load_dotenv
 
-from agents.bob_client import call_bob, extract_code_block
-from agents.validator import validate_source_file
+from remediator.remediation.bob_client import call_bob, extract_code_block
+from remediator.validation.validator import validate_source_file
 
 load_dotenv()
 

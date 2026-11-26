@@ -1,43 +1,48 @@
 from flask import Flask, render_template, request, jsonify
 from flask_socketio import SocketIO, emit
 import threading
-import sys
 import os
 import subprocess
 import logging
 from datetime import datetime
 import json
 
-# Add the current directory to the path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-from config import get_repository_config
-from agents.git_operations import clone_repository, cleanup_cloned_repo
-from agents.scanner import scan_k8s_config, summarize_findings
-from agents.image_scanner import scan_image, summarize_cves
-from agents.sast_scanner import scan_code, summarize_sast
-from agents.secret_scanner import scan_secrets, summarize_secrets
-from agents.cspm_scanner import scan_cspm, summarize_cspm
-from agents.runtime_scanner import scan_runtime, summarize_runtime
-from agents.network_scanner import scan_network, summarize_network
-from agents.findings import combine_findings
-from agents.jira_agent import create_jira_ticket
-from agents.remediation import generate_remediation
-from agents.source_remediation import apply_source_fixes
-from agents.advisory import generate_advisory
-from agents.validator import validate_yaml, validate_package_json
-from agents.dependency_validator import (
+from remediator.config import get_repository_config
+from remediator.integrations.git_operations import clone_repository, cleanup_cloned_repo
+from remediator.scanners.scanner import scan_k8s_config, summarize_findings
+from remediator.scanners.image_scanner import scan_image, summarize_cves
+from remediator.scanners.sast_scanner import scan_code, summarize_sast
+from remediator.scanners.secret_scanner import scan_secrets, summarize_secrets
+from remediator.scanners.cspm_scanner import scan_cspm, summarize_cspm
+from remediator.scanners.runtime_scanner import scan_runtime, summarize_runtime
+from remediator.scanners.network_scanner import scan_network, summarize_network
+from remediator.findings import combine_findings
+from remediator.integrations.jira_agent import create_jira_ticket
+from remediator.remediation.remediation import generate_remediation
+from remediator.remediation.source_remediation import apply_source_fixes
+from remediator.remediation.advisory import generate_advisory
+from remediator.validation.validator import validate_yaml, validate_package_json
+from remediator.validation.dependency_validator import (
     npm_available,
     validate_npm_package,
     find_missing_node_dependencies
 )
-from agents.dockerfile_remediation import generate_dockerfile_remediation
-from agents.feed_loader import FeedNotConfigured
-from agents.logger import log_activity
+from remediator.remediation.dockerfile_remediation import generate_dockerfile_remediation
+from remediator.scanners.feed_loader import FeedNotConfigured
+from remediator.logger import log_activity
 
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__)
+# The frontend lives in <project root>/remediator-ui
+UI_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "remediator-ui")
+)
+
+app = Flask(
+    __name__,
+    template_folder=os.path.join(UI_DIR, "templates"),
+    static_folder=os.path.join(UI_DIR, "static"),
+)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
 socketio = SocketIO(app, cors_allowed_origins="*")
 

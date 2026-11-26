@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 
-from agents.bob_client import call_bob, extract_code_block
+from remediator.remediation.bob_client import call_bob, extract_code_block
 
 load_dotenv()
 

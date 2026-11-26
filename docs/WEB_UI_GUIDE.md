@@ -25,7 +25,7 @@ The AudeSec Web UI provides a user-friendly interface for running security scans
          ▼
 ┌─────────────────┐
 │  Flask Server   │
-│  (web_app.py)   │
+│  (remediator/web/app.py)   │
 └────────┬────────┘
          │
          ▼
@@ -76,7 +76,7 @@ Make sure you have:
 ### Start the Server
 
 ```bash
-python web_app.py
+python -m remediator.web.app
 ```
 
 The server will start on `http://localhost:5000`
@@ -208,15 +208,15 @@ socket.emit('join_scan', { scan_id: 'scan_20260516_103000' });
 
 ### Modify Scan Steps
 
-Edit `web_app.py` to add/remove steps in the `run_security_scan()` function.
+Edit `remediator/web/app.py` to add/remove steps in the `run_security_scan()` function.
 
 ### Update UI Styling
 
-Edit `static/css/style.css` to customize colors, fonts, and layout.
+Edit `remediator-ui/static/css/style.css` to customize colors, fonts, and layout.
 
 ### Add New Metrics
 
-Update the metrics calculation in step 14 and add corresponding UI elements in `templates/index.html`.
+Update the metrics calculation in step 14 and add corresponding UI elements in `remediator-ui/templates/index.html`.
 
 ## Troubleshooting
 
@@ -225,7 +225,7 @@ Update the metrics calculation in step 14 and add corresponding UI elements in `
 If port 5000 is already in use:
 
 ```python
-# In web_app.py, change the port:
+# In remediator/web/app.py, change the port:
 socketio.run(app, debug=True, host='0.0.0.0', port=5001)
 ```
 
@@ -248,7 +248,7 @@ socketio.run(app, debug=True, host='0.0.0.0', port=5001)
 If validation fails:
 1. Check the AI output in server logs
 2. Verify OpenAI API key is valid
-3. Review the cleaning functions in `agents/remediation.py`
+3. Review the cleaning functions in `remediator/remediation/remediation.py`
 
 ## Production Deployment
 
@@ -256,7 +256,7 @@ If validation fails:
 
 ```bash
 pip install gunicorn
-gunicorn -k eventlet -w 1 -b 0.0.0.0:5000 web_app:app
+gunicorn -k eventlet -w 1 -b 0.0.0.0:5000 remediator.web.app:app
 ```
 
 ### Using Docker
@@ -275,7 +275,7 @@ COPY . .
 
 EXPOSE 5000
 
-CMD ["gunicorn", "-k", "eventlet", "-w", "1", "-b", "0.0.0.0:5000", "web_app:app"]
+CMD ["gunicorn", "-k", "eventlet", "-w", "1", "-b", "0.0.0.0:5000", "remediator.web.app:app"]
 ```
 
 Build and run:
