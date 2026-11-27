@@ -80,7 +80,7 @@ function startPolling() {
                 if (data.status === 'complete' && data.metrics) {
                     clearInterval(pollInterval);
                     setTimeout(() => {
-                        showResults(data.metrics);
+                        showResults(data.metrics, data);
                     }, 1000);
                 } else if (data.status === 'error') {
                     clearInterval(pollInterval);
@@ -102,8 +102,15 @@ function updateStep(progress) {
     const message = progress.message;
     const data = progress.data;
     
-    // Find the step element
-    const stepElement = document.querySelector(`.step[data-step="${step}"]`);
+    // Find the step element. A fatal error (step -1) has no row of its own,
+    // so show it on the step that was running, or the first step if none was.
+    let stepElement = document.querySelector(`.step[data-step="${step}"]`);
+    if (!stepElement && step === -1) {
+        const running = document.querySelectorAll('.step.running');
+        stepElement = running.length
+            ? running[running.length - 1]
+            : document.querySelector('.step');
+    }
     if (!stepElement) return;
     
     // Remove all status classes
@@ -159,9 +166,7 @@ const METRIC_CARDS = [
 ];
 
 const ADVISORY_CARDS = [
-    { key: 'cspm', title: 'Cloud Posture (CSPM)', icon: '☁️' },
-    { key: 'runtime', title: 'Runtime Security', icon: '🏃' },
-    { key: 'network', title: 'Network Exposure', icon: '🌐' }
+    { key: 'cspm', title: 'Cloud Posture (IaC)', icon: '☁️' }
 ];
 
 function createEl(tag, className, text) {
@@ -212,7 +217,124 @@ function createAdvisoryCard(def, count) {
     return card;
 }
 
-function showResults(metrics) {
+const JIRA_KEY_PATTERN = /^[A-Z][A-Z0-9_]+-\d+$/;
+
+// Returns the normalised URL only for plain https links without embedded credentials
+function safeHttpsUrl(value) {
+    if (typeof value !== 'string' || !value.startsWith('https://') || /[\s\u0000-\u001f\u007f]/.test(value)) {
+        return null;
+    }
+    try {
+        const parsed = new URL(value);
+        if (parsed.protocol !== 'https:' || !parsed.hostname || parsed.username || parsed.password) {
+            return null;
+        }
+        return parsed.href;
+    } catch (e) {
+        return null;
+    }
+}
+
+function jiraBrowseUrl(baseUrl, key) {
+    const base = safeHttpsUrl(baseUrl);
+    if (!base || typeof key !== 'string' || !JIRA_KEY_PATTERN.test(key)) return null;
+    return safeHttpsUrl(base.replace(/\/+$/, '') + '/browse/' + encodeURIComponent(key));
+}
+
+function createExternalLink(href, text) {
+    const link = createEl('a', null, text);
+    link.href = href;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    return link;
+}
+
+function createDeliveryBlock(title, warn) {
+    const block = createEl('div', 'delivery-block' + (warn ? ' warn' : ''));
+    block.appendChild(createEl('h4', null, title));
+    return block;
+}
+
+function createList(items) {
+    const list = createEl('ul', 'delivery-list');
+    items.forEach(item => list.appendChild(item));
+    return list;
+}
+
+function createPullRequestBlock(result) {
+    const prUrl = safeHttpsUrl(result.pr_url);
+    const block = createDeliveryBlock('Pull Request', !prUrl);
+
+    if (prUrl) {
+        const line = createEl('p');
+        line.appendChild(createExternalLink(prUrl, prUrl));
+        block.appendChild(line);
+    } else {
+        // pr_status: no_changes, no_token, unsupported_host, commit_failed, push_failed, failed
+        const message = typeof result.pr_message === 'string' && result.pr_message
+            ? result.pr_message
+            : 'No pull request was raised.';
+        block.appendChild(createEl('p', null, message));
+    }
+
+    if (typeof result.default_branch === 'string' && result.default_branch) {
+        block.appendChild(createEl('p', null, 'Base branch: ' + result.default_branch));
+    }
+
+    const files = Array.isArray(result.files_updated) ? result.files_updated : [];
+    if (files.length) {
+        block.appendChild(createEl('p', null, 'Files updated (' + files.length + '):'));
+        block.appendChild(createList(files.map(file => {
+            const item = createEl('li');
+            item.appendChild(createEl('code', null, String(file)));
+            return item;
+        })));
+    }
+    return block;
+}
+
+function createJiraBlock(result) {
+    const keys = Array.isArray(result.jira_keys) ? result.jira_keys : [];
+    const links = result.jira_links && typeof result.jira_links === 'object' ? result.jira_links : {};
+    const block = createDeliveryBlock('JIRA Tickets', false);
+
+    if (!keys.length) {
+        block.appendChild(createEl('p', null, 'No JIRA tickets were created.'));
+    } else {
+        block.appendChild(createList(keys.map(key => {
+            const item = createEl('li');
+            const url = jiraBrowseUrl(result.jira_base_url, key);
+            if (url) {
+                item.appendChild(createExternalLink(url, String(key)));
+            } else {
+                item.appendChild(createEl('span', null, String(key)));
+            }
+            if (Object.prototype.hasOwnProperty.call(links, key)) {
+                const linked = links[key] === true;
+                item.appendChild(createEl(
+                    'span',
+                    linked ? 'link-ok' : 'link-failed',
+                    linked ? ' - pull request linked' : ' - pull request link failed'
+                ));
+            }
+            return item;
+        })));
+    }
+
+    if (typeof result.jira_link_message === 'string' && result.jira_link_message) {
+        block.appendChild(createEl('p', null, result.jira_link_message));
+    }
+    return block;
+}
+
+function showDelivery(result) {
+    const body = document.getElementById('deliveryBody');
+    body.replaceChildren();
+    body.appendChild(createPullRequestBlock(result || {}));
+    body.appendChild(createJiraBlock(result || {}));
+}
+
+function showResults(metrics, result) {
     // Hide progress, show results
     scanProgress.style.display = 'none';
     scanResults.style.display = 'block';
@@ -245,6 +367,8 @@ function showResults(metrics) {
             if (any) advisorySection.style.display = 'block';
         }
     }
+
+    showDelivery(result);
 
     // Scroll to results
     scanResults.scrollIntoView({ behavior: 'smooth' });

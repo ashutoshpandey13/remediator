@@ -1,497 +1,217 @@
 # AudeSec-POC - Automated Security Remediation System
 
-An intelligent security remediation system that automatically scans, detects, fixes, and validates security vulnerabilities in Kubernetes deployments and container images.
+Paste a Git repository URL and AudeSec scans it, opens JIRA tickets for the serious findings, fixes what it can with AI, and raises a pull request against the same repository. The PR is then linked back to each JIRA ticket.
 
-## 🚀 New Features
+## 📋 How it works
 
-### 🌐 Web UI (NEW!)
-- **User-friendly web interface** - No command line needed!
-- **Real-time progress updates** via WebSocket
-- **Visual metrics dashboard** showing security improvements
-- **Step-by-step workflow visualization**
-- **Responsive design** - Works on desktop and mobile
+```
+repo URL -> clone -> discover files -> scan -> JIRA tickets -> AI remediation
+         -> branch / commit / push -> pull request -> PR linked to the JIRA tickets
+```
 
-### Git Repository Integration
-- **Clone any Git repository** for security scanning
-- **Automatic PR creation** with remediated code
-- **Branch management** for security fixes
-- **Comprehensive security reports** in PR descriptions
+1. **Clone** the repository into a private temporary directory and record its default branch (the PR base).
+2. **Discover** files anywhere in the repo: Kubernetes manifests (detected by content: `apiVersion` + `kind`), every `Dockerfile` (`Dockerfile`, `Dockerfile.*`, `*.Dockerfile`) and every `package.json`. `node_modules`, `vendor`, `.git` and symlinks are skipped.
+3. **Scan** every manifest (Trivy), build and CVE-scan every Dockerfile (Docker + Trivy), plus SAST (Semgrep) and secrets (Gitleaks) for the whole repo. A repo with no Dockerfile skips the image scan.
+4. **JIRA**: one ticket per HIGH/CRITICAL finding, at most 5 per scan (optional).
+5. **Remediate** with IBM Bob: each file is fixed and validated on its own, and a bad result for one file is reverted without affecting the others. Dependency (`package.json`) fixes are Node/npm only and are skipped for other ecosystems. Fixed Dockerfiles are rebuilt; if the rebuild fails the change is reverted.
+6. **Pull request**: a branch `security-remediation-<id>` is created, **only the files that were really changed** are committed and pushed, and a PR is opened against the default branch. The PR body is generated from the real before/after numbers.
+7. **Link**: each JIRA ticket gets a link to the PR and a short summary comment.
+8. The clone and every Docker image built during the scan are removed at the end.
 
-## 📋 Overview
-
-AudeSec-POC automates the entire security remediation workflow:
-
-1. **Clone** - Clone target Git repository
-2. **Scan** - Detect vulnerabilities and misconfigurations
-3. **Remediate** - AI-powered automatic fixes
-4. **Validate** - Ensure fixes are correct
-5. **PR** - Create pull request with changes
-6. **Rebuild** - Build and test fixed container
-7. **Re-scan** - Verify security improvements
+The results page shows the PR link, the JIRA keys (as links when `JIRA_URL` is https) and the before/after metrics.
 
 ## 🔧 Prerequisites
 
-### Required Tools
-- Python 3.8+
-- Docker
-- Trivy (security scanner)
-- Semgrep (SAST) - installed via `requirements.txt`
-- Gitleaks (secret scanning)
-- Node.js / npm (validates remediated `package.json` dependencies; optional)
-- Git
-- GitHub CLI (`gh`) - for PR creation
+### Tools (on the machine that runs the app)
 
-### Supported Scanners
+| Tool | Used for |
+|------|----------|
+| Python 3.8+ | the app (`pip install -r requirements.txt`) |
+| Git | clone, branch, commit, push |
+| Docker | building the repo's Dockerfiles for the CVE scan |
+| Trivy | Kubernetes misconfigurations and image CVEs |
+| Semgrep | SAST (installed by `requirements.txt`) |
+| Gitleaks | secret scanning (installed separately) |
+| Bob CLI (`bob`) | AI remediation |
+| Node.js / npm | validating remediated `package.json` dependencies (optional) |
+
+A scanner that is not installed is skipped and reported in the UI; the rest of the scan continues.
+
+The Docker image installs all of them (Git, Docker CLI, Trivy, Gitleaks, Semgrep, Node.js 22 + npm, and Bob Shell `@ibm/bob`) with pinned versions, and the image build fails if any of them is missing. Bob needs Node.js >= 22.15.
+
+### Environment variables
+
+Put these in a `.env` file in the project root (it is loaded at startup), or pass them to Docker with `--env-file`. **Never commit `.env`** - it is listed in `.gitignore`.
+
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `BOB_API_KEY` | yes | AI remediation. The scan stops immediately if it is missing. |
+| `GITHUB_TOKEN` | for PRs | Token with **write access to the target repository** (contents + pull requests). Used for `git push` and for creating the PR through the GitHub REST API (no GitHub CLI needed). Without it the scan still runs but no PR is raised. |
+| `JIRA_URL` | optional | Must be `https://...` for ticket links in the UI. |
+| `JIRA_EMAIL`, `JIRA_API_TOKEN` | optional | JIRA credentials (all three `JIRA_*` values are needed to enable JIRA). |
+| `JIRA_PROJECT` | optional | Project key for new tickets (default `SEC`). |
+| `HOST`, `PORT` | optional | Bind address (default `127.0.0.1`) and port (default `8000`). |
+| `LOG_LEVEL` | optional | Python log level (default `INFO`). |
+
+The token is passed to git only through the process environment (scoped to `github.com`) and to the GitHub API in an `Authorization` header over HTTPS (redirects are not followed). It is never written into a remote URL, `.git/config`, command-line arguments, logs or the UI.
+
+### Scanners
 
 | Scanner | Tool | Source |
 |---------|------|--------|
-| Kubernetes misconfigurations | Trivy | `deployment.yaml` in the repo |
-| Container image CVEs | Trivy | image built from the repo `Dockerfile` |
+| Kubernetes misconfigurations | Trivy | every manifest found in the repo |
+| Container image CVEs | Trivy | one image per Dockerfile found |
 | SAST (code vulnerabilities) | Semgrep | repo source code |
 | Secrets | Gitleaks | repo source code (values are redacted) |
-| Cloud posture (CSPM) | JSON feed | file named by `CSPM_FINDINGS_PATH` |
-| Runtime security | JSON feed | file named by `RUNTIME_FINDINGS_PATH` |
-| Network exposure | JSON feed | file named by `NETWORK_FINDINGS_PATH` |
+| Cloud posture (CSPM) | Trivy | the repo's infrastructure-as-code: Terraform, CloudFormation, Helm, Azure ARM, ... |
 
-A scanner that is not installed is skipped and reported in the UI; the rest of the scan continues.
-SAST and secret findings are fixed in the cloned source files; CSPM, runtime and network findings
-cannot be fixed in the repository, so recommendations are written to `reports/advisory.md`.
-The CSPM / runtime / network scanners read JSON exports (Prowler, Falco, kube-hunter, ...) and are
-skipped until their environment variable points at a file.
+SAST and secret findings are fixed in the cloned source. Cloud posture findings are reported with AI recommendations in `reports/advisory.md` and are not changed automatically.
+
+Runtime security and live network exposure describe a running cluster or cloud account, not a repository, so those two steps are shown as *not applicable* in a repository scan.
 
 ## 🚀 How to Run
 
-### Using Docker (Recommended)
-
-The simplest way to run AudeSec with all dependencies pre-configured:
+### Local
 
 ```bash
-# 1. Clone the repository
-git clone <your-repo-url>
-cd audesec-poc
-
-# 2. Build the Docker image
-docker build -t audesec-platform .
-
-# 3. Run the container
-docker run -d \
-  --name audesec \
-  -p 8000:8000 \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v $(pwd)/reports:/app/reports \
-  audesec-platform
-
-# 4. Access the web UI
-# Open browser to: http://localhost:8000
-
-# 5. View logs (optional)
-docker logs -f audesec
-
-# 6. Stop the container (when done)
-docker stop audesec
-docker rm audesec
-```
-
-**That's it!** The application runs with all API keys and dependencies pre-configured in the Docker image.
-
-### Local Development (Without Docker)
-
-For development or if you prefer running without Docker:
-
-```bash
-# 1. Install Python dependencies
+python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 
-# 2. Create .env file
-cp .env.example .env
-
-# 3. Edit .env and add your API keys
-nano .env  # or use your preferred editor
-
-# 4. Run the web application
-python -m remediator.web.app
-
-# 5. Access at: http://localhost:5000
+# create .env with the variables above, then:
+HOST=127.0.0.1 python -m remediator.web.app
+# open http://127.0.0.1:8000
 ```
 
-## 🎯 How to Use
+The startup log lists which settings are set (names only, never values).
 
-### Web Interface (Recommended)
-
-1. **Access the application** at `http://localhost:8000`
-2. **Enter repository URL** in the web form
-3. **Click "Start Scan"** to begin the security remediation workflow
-4. **Monitor progress** in real-time through the web interface
-5. **Review results** including:
-   - Security vulnerabilities found
-   - Automated fixes applied
-   - Pull request created with remediation
-   - Before/after security metrics
-
-### Command Line Interface
-
-For automation or scripting:
+### Docker
 
 ```bash
-# Using Docker
-docker exec -it audesec python -m remediator.cli
-
-# Or locally (after activating venv if used)
-python -m remediator.cli
-```
-
-The CLI will prompt you for the repository URL and guide you through the process.
-
-## ⚙️ Configuration (Optional)
-
-The Docker image includes pre-configured environment variables. You only need to customize them if you want to use your own API keys.
-
-### Override Environment Variables (Docker)
-
-Pass custom environment variables when running the container:
-
-```bash
-docker run -d \
-  --name audesec \
-  -p 8000:8000 \
+docker build -t audesec-platform .
+docker run -d --name audesec \
+  -p 127.0.0.1:8000:8000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v $(pwd)/reports:/app/reports \
-  -e OPENAI_API_KEY=your_custom_key \
-  -e GITHUB_TOKEN=your_custom_token \
-  -e JIRA_URL=https://your-domain.atlassian.net \
-  -e JIRA_EMAIL=your-email@example.com \
-  -e JIRA_API_TOKEN=your_jira_token \
-  -e JIRA_PROJECT=YOUR_PROJECT \
+  -v "$(pwd)/reports:/app/reports" \
+  --env-file .env \
   audesec-platform
+# open http://127.0.0.1:8000
 ```
 
-### Local Development Configuration
+The image build copies `.env*` when it exists, so never publish an image that was built next to a filled-in `.env`.
 
-Create a `.env` file with your credentials:
+The image build verifies every tool (`git`, `docker`, `trivy`, `gitleaks`, `semgrep`, `node`, `npm`, `bob`). Inside the container the app binds to the container's own address (not `0.0.0.0`) unless you set `HOST`, so the published port is reachable; keep it published on `127.0.0.1` as above. `BOB_API_KEY` and the other settings come from `--env-file`. The container needs the Docker socket to build the target repo's Dockerfiles, which gives it control of the host's Docker, so only run it on a machine you trust. It runs as root; the `audesec` user in the image is not used because of the socket.
+
+### Using the web UI
+
+1. Enter a repository URL: `https://host/owner/repo(.git)`, `ssh://...` or `git@host:owner/repo.git`. Anything else (leading `-`, `file:`, `ext::`, `http://`, whitespace) is rejected with HTTP 400 before git runs.
+2. Click **Start Scan** and follow the steps in real time.
+3. Review the result: PR link, JIRA tickets, changed files, before/after metrics. **Always review the PR before merging.**
+
+## ⚠️ Behaviour when something is missing or fails
+
+The scan itself always finishes. The PR step reports why no PR was raised (shown in the UI and as `pr_status` in `/api/scan/<id>`).
+
+| Situation | Result |
+|-----------|--------|
+| Invalid repository URL | HTTP 400, nothing is cloned |
+| `BOB_API_KEY` missing | scan stops at the start with an error |
+| No `GITHUB_TOKEN` | scan and fixes run, **no PR** (`no_token`) |
+| Remediation changed nothing | no branch, no PR (`no_changes`) |
+| Push denied / token has no write access | **no PR** (`push_failed`); there is no fork fallback |
+| PR creation fails after the push (for example the token lacks pull-request permission, or a PR for the branch already exists) | the branch stays pushed, error reported (`failed`) |
+| Host is not GitHub (GitLab, Bitbucket, look-alike hosts, ...) | scan and fixes run, **PR not supported** (`unsupported_host`) |
+| JIRA not configured | no tickets, the PR is still raised |
+| `JIRA_URL` is not https | tickets are created and linked, keys shown as plain text in the UI |
+| Linking one ticket fails | the other tickets are still linked, the scan is not affected |
+| The AI's fix for a file is invalid | that file is reverted, the others are kept |
+| A Dockerfile does not build | it is not scanned, or its change is reverted after a failed rebuild |
+
+**UBI base images:** Dockerfiles that the AI rewrites use Red Hat UBI images from `registry.access.redhat.com`, which needs **no login** (`registry.redhat.io/ubi*` references are rewritten to it). A Dockerfile in the target repo that itself uses `registry.redhat.io` needs `docker login registry.redhat.io` on the host.
+
+## 🧪 Tests
+
+The unit tests are offline: no network, Docker, Trivy, Bob, JIRA or real credentials. They never read `.env` or touch the repository's own git state; they use temp dirs, local bare git repositories and stubs. Only the standard library (`unittest`) is used, so nothing needs installing beyond `requirements.txt`.
 
 ```bash
-# Required
-OPENAI_API_KEY=sk-your-openai-api-key
-GITHUB_TOKEN=ghp_your-github-token
-
-# Optional (for JIRA integration)
-JIRA_URL=https://your-domain.atlassian.net
-JIRA_EMAIL=your-email@example.com
-JIRA_API_TOKEN=your-jira-token
-JIRA_PROJECT=PROJ
+python -m unittest discover -s tests -t .
 ```
 
-## 🐳 Docker Management Commands
+They cover file discovery, URL / branch-name validation, GitHub URL parsing, selective commit and token-free push against a local origin, the GitHub API request for the PR, the PR body, the JIRA helpers, the JIRA base URL check, `POST /api/scan` validation, and whole `run_security_scan` runs (PR + linked tickets, no token, no changes, push denied, non-GitHub URL, JIRA not configured, no manifests/Dockerfile, nested and multiple assets).
 
-```bash
-# View logs
-docker logs -f audesec
+## ✅ Manual live-verification checklist
 
-# Stop container
-docker stop audesec
+These need real accounts and tools, so run them yourself. Use a throw-away GitHub repository you can write to, a test JIRA project and a scoped token.
 
-# Start stopped container
-docker start audesec
-
-# Restart container
-docker restart audesec
-
-# Remove container
-docker rm audesec
-
-# Remove container and image
-docker rm -f audesec
-docker rmi audesec-platform
-
-# Execute commands inside container
-docker exec -it audesec bash
-```
-
-## 📊 Workflow Steps
-
-### Step 1: Repository Configuration
-- Accepts Git repository URL (HTTPS or SSH)
-- Configures file paths and branch name
-
-### Step 2: Clone Repository
-- Clones repository to `cloned_repo/` directory
-- Removes existing clone if present
-
-### Step 3: File Discovery
-- Automatically locates:
-  - Kubernetes deployment YAML
-  - package.json (Node.js dependencies)
-  - Dockerfile
-
-### Step 4: Kubernetes Security Scan
-- Scans K8s configs with Trivy
-- Detects misconfigurations
-- Categorizes by severity (CRITICAL, HIGH, MEDIUM, LOW)
-
-### Step 5: Container Image CVE Scan
-- Builds Docker image from repository
-- Scans for CVEs using Trivy
-- Identifies vulnerable packages
-
-### Step 6: Unified Findings
-- Combines K8s and CVE findings
-- Normalizes severity levels
-- Prioritizes critical issues
-
-### Step 7: JIRA Ticket Creation
-- Creates tickets for HIGH/CRITICAL issues
-- Includes detailed vulnerability information
-- Links to remediation PR (optional)
-
-### Step 8: AI-Powered Remediation
-- Uses OpenAI GPT-4 to generate fixes
-- Updates Kubernetes configurations
-- Upgrades vulnerable dependencies
-- Maintains application functionality
-
-### Step 9: Apply Remediation
-- Writes fixed files back to repository
-- Updates deployment.yaml
-- Updates package.json
-
-### Step 10: Validation
-- Validates YAML syntax
-- Validates JSON syntax
-- Ensures files are parseable
-
-### Step 11: Git Branch Creation
-- Creates new branch (default: `security-remediation`)
-- Commits all changes
-- Includes detailed commit message
-
-### Step 12: Pull Request Creation
-- Pushes branch to remote
-- Creates PR with:
-  - Security improvement metrics
-  - List of fixed vulnerabilities
-  - Review checklist
-- Returns PR URL
-
-### Step 13: Rebuild Container
-- Builds new Docker image with fixes
-- Tags as `remediated-{repo-name}`
-
-### Step 14: Re-scan Fixed Assets
-- Re-scans Kubernetes config
-- Re-scans container image
-- Compares before/after metrics
-
-### Step 15: Security Improvement Summary
-- Shows CVE reduction
-- Shows misconfiguration reduction
-- Calculates improvement percentage
+1. **Setup**: `docker info`, `trivy --version`, `gitleaks version`, `bob --version` work; `.env` has `BOB_API_KEY`, `GITHUB_TOKEN` and `JIRA_*`; the startup log shows them as `set`.
+2. **Sample Node repo** (manifest + Dockerfile + `package.json`): a PR is created against the default branch and changes only remediated files; its body lists files, before/after numbers and JIRA keys; each ticket (max 5) has a remote link and a comment with the PR URL; ticket and PR links in the UI open in a new tab.
+3. **Python-only repo** (no Dockerfile, manifest or `package.json`): the scan completes without errors, the image scan is skipped ("No Dockerfile found"), and a PR is raised only if SAST/secret fixes changed something.
+4. **Nested / multiple assets** (manifests in subfolders, several Dockerfiles such as `svc/a/Dockerfile` and `svc/b/Dockerfile.prod`, several `package.json`): every one is discovered and scanned, and the commit has the correct relative paths.
+5. **Failure paths**
+   - empty `GITHUB_TOKEN`: `no_token`, no PR, tickets still listed.
+   - read-only token, or a repo you cannot write to: `push_failed`, no PR.
+   - non-GitHub URL: `unsupported_host`.
+   - `JIRA_*` removed: no tickets, PR still created, "No JIRA tickets were created."
+   - `JIRA_URL=http://...`: keys are plain text.
+   - invalid URL such as `--upload-pack=x`: alert (HTTP 400).
+   - repo with nothing to fix: `no_changes`.
+6. **Cleanup**: after each scan there is no `security-remediation-clone-*` directory in the working directory and `docker images` shows no `*-scan-*` images. Delete the test branches/PRs on GitHub.
 
 ## 📁 Project Structure
 
 ```
 audesec-poc/
 ├── remediator/                 # Python package (all application code)
-│   ├── cli.py                  # Command-line workflow  (python -m remediator.cli)
-│   ├── config.py               # Configuration management
+│   ├── config.py               # Configuration and file discovery
 │   ├── findings.py             # Findings normalization
 │   ├── logger.py               # Activity logging
-│   ├── scanners/               # Everything that detects issues
-│   │   ├── scanner.py          #   Kubernetes config scanner (Trivy)
-│   │   ├── image_scanner.py    #   Container image scanner (Trivy)
-│   │   ├── sast_scanner.py     #   Code scanner (Semgrep)
-│   │   ├── secret_scanner.py   #   Secret scanner (Gitleaks)
-│   │   ├── cspm_scanner.py     #   Cloud posture feed
-│   │   ├── runtime_scanner.py  #   Runtime security feed
-│   │   ├── network_scanner.py  #   Network exposure feed
-│   │   └── feed_loader.py      #   JSON feed loader
-│   ├── remediation/            # AI-powered fixing
-│   │   ├── bob_client.py       #   LLM client
-│   │   ├── remediation.py      #   K8s / package.json fixes
-│   │   ├── source_remediation.py
-│   │   ├── dockerfile_remediation.py
-│   │   └── advisory.py         #   Recommendations for non-repo findings
+│   ├── scanners/               # Trivy (K8s, images, IaC), Semgrep, Gitleaks
+│   ├── remediation/            # AI fixing (Bob client; K8s, package.json, Dockerfile, source)
 │   ├── validation/             # Checks on fixed files
-│   │   ├── validator.py
-│   │   └── dependency_validator.py
-│   ├── integrations/           # External systems
-│   │   ├── git_operations.py   #   Git & PR operations
-│   │   └── jira_agent.py       #   JIRA integration
-│   ├── web/                    # Flask + Socket.IO backend (python -m remediator.web.app)
-│   │   └── app.py
-│   └── legacy/                 # Older CLI variant kept for reference
-│       └── app_new.py
+│   ├── integrations/
+│   │   ├── git_operations.py   #   clone, branch, commit, push, PR (GitHub REST API), PR body
+│   │   └── jira_agent.py       #   JIRA tickets and PR links
+│   └── web/app.py              # Flask + Socket.IO backend (python -m remediator.web.app)
 ├── remediator-ui/              # Frontend (served by the Flask backend)
-│   ├── templates/index.html
-│   └── static/                 # css/ and js/
-├── scripts/start_web_ui.sh     # Local startup helper
-├── docs/                       # Extra guides (setup, workflow, web UI, Docker)
-├── sample_data/                # Example CSPM / runtime / network JSON feeds
+├── tests/                      # Offline unit tests
 ├── requirements.txt            # Python dependencies
 ├── Dockerfile
-├── .env                        # Environment variables (create this)
-├── reports/                    # Scan reports (auto-generated)
-└── cloned_repo/                # Cloned repository (auto-generated)
+├── .env                        # Your settings and secrets (create it; never commit)
+├── reports/                    # Scan reports (generated)
+└── security-remediation-clone-*/   # Per-scan clones (generated, removed after each scan)
 ```
 
 ## 🔒 Security Best Practices
 
-### Secrets Management
-- Never commit `.env` file
-- Use environment variables for sensitive data
-- Rotate API tokens regularly
+- Never commit `.env`; rotate tokens regularly.
+- Give `GITHUB_TOKEN` the minimum scope: write access to the repositories you scan, nothing else.
+- Keep the UI bound to `127.0.0.1` unless you put it behind authentication.
+- Always review AI-generated PRs and test them before merging.
 
-### Repository Access
-- Use read-only tokens when possible
-- Limit token scopes to minimum required
-- Use SSH keys for private repositories
+## 🐳 Docker Management Commands
 
-### PR Review
-- Always review AI-generated changes
-- Test in staging environment first
-- Verify no breaking changes introduced
+```bash
+docker logs -f audesec        # view logs
+docker stop audesec           # stop
+docker start audesec          # start again
+docker rm -f audesec          # remove container
+docker rmi audesec-platform   # remove image
+docker exec -it audesec bash  # shell inside the container
+```
 
 ## 🐛 Troubleshooting
 
-### Container Won't Start
-
-```bash
-# Check logs
-docker logs audesec
-
-# Common issues:
-# 1. Port 8000 already in use
-sudo lsof -i :8000
-# Kill the process or use a different port: -p 9000:8000
-
-# 2. Docker daemon not running
-docker info
-# Start Docker Desktop or Docker daemon
-
-# 3. Permission denied on Docker socket
-sudo chmod 666 /var/run/docker.sock
-```
-
-### Can't Access Web UI
-
-```bash
-# Verify container is running
-docker ps | grep audesec
-
-# Check container health
-docker inspect --format='{{.State.Health.Status}}' audesec
-
-# Test connection
-curl http://localhost:8000
-
-# If using different port, adjust URL accordingly
-```
-
-### "Git clone failed" in Application
-
-- Check repository URL is correct
-- Verify you have access to the repository
-- For private repos, ensure GitHub token has proper permissions
-- Check container logs: `docker logs audesec`
-
-### "Docker build failed" Inside Container
-
-```bash
-# Verify Docker socket is mounted
-docker exec audesec ls -la /var/run/docker.sock
-
-# Test Docker access from inside container
-docker exec audesec docker ps
-
-# If permission denied, check Docker socket permissions on host
-ls -la /var/run/docker.sock
-```
-
-### "Trivy scan failed"
-
-```bash
-# Update Trivy database inside container
-docker exec audesec trivy image --download-db-only
-
-# Check Trivy version
-docker exec audesec trivy --version
-
-# Verify internet connectivity from container
-docker exec audesec ping -c 3 google.com
-```
-
-### Out of Memory or Slow Performance
-
-```bash
-# Check container resource usage
-docker stats audesec
-
-# Restart container with more resources
-docker stop audesec
-docker rm audesec
-docker run -d \
-  --name audesec \
-  -p 8000:8000 \
-  --memory="4g" \
-  --cpus="2.0" \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  audesec-platform
-```
-
-### View Detailed Logs
-
-```bash
-# Real-time logs
-docker logs -f audesec
-
-# Last 100 lines
-docker logs --tail 100 audesec
-
-# Logs with timestamps
-docker logs -t audesec
-```
-
-## 📈 Example Output
-
-```
-═══ STEP 1: Repository Configuration ═══
-✓ Repository: https://github.com/example/vulnerable-app.git
-
-═══ STEP 2: Cloning Repository ═══
-✓ Cloned to: /path/to/cloned_repo
-
-═══ STEP 3: Locating Files ═══
-✓ Deployment YAML: cloned_repo/deployment.yaml
-✓ Package JSON: cloned_repo/package.json
-✓ Dockerfile: cloned_repo/Dockerfile
-
-═══ STEP 4: Kubernetes Security Scan ═══
-Found 5 Kubernetes misconfigurations:
-  [HIGH] Container should not run as root
-  [MEDIUM] CPU limits not set
-  [MEDIUM] Memory limits not set
-  ...
-
-═══ STEP 15: Security Improvement Summary ═══
-Metric                    Before     After      Improvement    
-────────────────────────────────────────────────────────────
-CVEs                      47         12         35             
-Misconfigurations         5          1          4              
-
-✓ Overall improvement: 85.4%
-
-═══ REMEDIATION COMPLETE ═══
-Repository: https://github.com/example/vulnerable-app.git
-Branch: security-remediation
-Pull Request: https://github.com/example/vulnerable-app/pull/123
-```
+- **Port in use / UI not reachable**: `lsof -i :8000`, or set `PORT`, or change the `-p` mapping.
+- **"Git clone failed"**: check the URL and your access. Private repos need credentials git can use non-interactively (prompts are disabled).
+- **No PR was created**: read the Pull Request step message. `no_token`, `push_failed` (token lacks write access) and `unsupported_host` are described above. For `failed`, read the server log: it shows GitHub's error (for example a token without pull-request permission).
+- **"Docker build failed"**: in Docker, make sure `/var/run/docker.sock` is mounted. For `registry.redhat.io` images run `docker login registry.redhat.io`.
+- **Trivy errors**: update its database with `trivy image --download-db-only` and check network access.
+- **Detailed logs**: set `LOG_LEVEL=DEBUG`. Secrets and URL credentials are never logged.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+1. Fork the repository and create a feature branch.
+2. Make your changes and run the tests (`python -m unittest discover -s tests -t .`).
+3. Submit a pull request.
 
 ## 📄 License
 
@@ -499,16 +219,10 @@ This project is for proof-of-concept purposes.
 
 ## 🔗 Related Tools
 
-- [Trivy](https://github.com/aquasecurity/trivy) - Vulnerability scanner
-- [GitHub CLI](https://cli.github.com/) - GitHub command line tool
-- [OpenAI API](https://openai.com/api/) - AI-powered remediation
-
-## 📞 Support
-
-For issues and questions:
-- Open an issue on GitHub
-- Check existing documentation
-- Review troubleshooting section
+- [Trivy](https://github.com/aquasecurity/trivy) - vulnerability scanner
+- [Semgrep](https://semgrep.dev/) - SAST
+- [Gitleaks](https://github.com/gitleaks/gitleaks) - secret scanner
+- [GitHub REST API](https://docs.github.com/en/rest/pulls/pulls#create-a-pull-request) - pull request creation
 
 ---
 

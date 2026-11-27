@@ -17,14 +17,19 @@ def extract_code_block(text: str) -> str:
     return (match.group(1) if match else text).strip()
 
 
+def ensure_bob_configured():
+    """Raise if Bob cannot be called, so callers can fail before doing slow work."""
+    if not os.getenv("BOB_API_KEY"):
+        raise Exception("BOB_API_KEY is not set (add it to .env)")
+
+
 def call_bob(prompt: str) -> str:
     """
     Send a prompt to IBM Bob Shell (non-interactive) and return the reply text.
 
     Requires the `bob` CLI on PATH and BOB_API_KEY set (e.g. in .env).
     """
-    if not os.getenv("BOB_API_KEY"):
-        raise Exception("BOB_API_KEY is not set (add it to .env)")
+    ensure_bob_configured()
 
     # Prompt is passed via stdin; ask mode + no MCP/subagents keeps it read-only
     result = subprocess.run(

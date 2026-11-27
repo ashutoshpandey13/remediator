@@ -44,7 +44,6 @@ env/
 # Documentation (not needed in container)
 *.md
 !README.md
-docs/
 
 # Test files
 tests/

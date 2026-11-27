@@ -1,9 +1,16 @@
 from dotenv import load_dotenv
+import logging
 import re
 
-from remediator.remediation.bob_client import call_bob, extract_code_block
+from remediator.remediation.bob_client import call_bob
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
+
+_FROM_LINE = re.compile(r'^[ \t]*FROM[ \t]+\S+', re.MULTILINE | re.IGNORECASE)
+_FENCED_BLOCK = re.compile(r'```[\w-]*[ \t]*\n(.*?)```', re.DOTALL)
+_MAX_LOGGED_REPLY = 200
 
 
 def detect_base_image_type(dockerfile_content: str) -> str:
@@ -34,6 +41,17 @@ def detect_base_image_type(dockerfile_content: str) -> str:
         return 'unknown'
 
 
+# Red Hat UBI images are published on registry.access.redhat.com without
+# authentication. The same images on registry.redhat.io need "docker login",
+# which makes the rebuild step fail with 401 on machines that are not logged in.
+UBI_REGISTRY = 'registry.access.redhat.com'
+
+
+def use_anonymous_ubi_registry(dockerfile_content: str) -> str:
+    """Rewrite registry.redhat.io/ubi* image references to the anonymous mirror."""
+    return re.sub(r'\bregistry\.redhat\.io/(ubi\d)', rf'{UBI_REGISTRY}/\1', dockerfile_content)
+
+
 def get_recommended_base_image(image_type: str, current_image: str) -> str:
     """
     Get recommended secure base image based on type.
@@ -46,12 +64,12 @@ def get_recommended_base_image(image_type: str, current_image: str) -> str:
         Recommended base image
     """
     recommendations = {
-        'python': 'python:3.12-alpine',
-        'node': 'node:20-alpine',
-        'java': 'eclipse-temurin:21-jre-alpine',
-        'go': 'golang:1.21-alpine',
-        'ruby': 'ruby:3.2-alpine',
-        'php': 'php:8.2-alpine'
+        'python': f'{UBI_REGISTRY}/ubi9/python-312-minimal:latest',
+        'node': f'{UBI_REGISTRY}/ubi9/nodejs-24-minimal:latest',
+        'java': f'{UBI_REGISTRY}/ubi9/openjdk-21-runtime:latest',
+        'go': f'{UBI_REGISTRY}/ubi9/go-toolset:latest',
+        'ruby': f'{UBI_REGISTRY}/ubi9/ruby-33:latest',
+        'php': f'{UBI_REGISTRY}/ubi9/php-83:latest'
     }
     
     return recommendations.get(image_type, current_image)
@@ -89,7 +107,7 @@ Your task:
 1. Update the Dockerfile to use a more secure base image
 2. Minimize CVE vulnerabilities
 3. Preserve application functionality
-4. Use Alpine or slim variants when possible
+4. Use a minimal Red Hat UBI base image pulled from {UBI_REGISTRY} (never registry.redhat.io, which needs a login)
 
 Current Dockerfile:
 {dockerfile_content}
@@ -102,55 +120,81 @@ CVE Findings (sample):
 {cve_findings[:10]}
 
 Instructions:
-- Update FROM statement to use latest secure image
-- For Python: Use python:3.12-alpine or python:3.12-slim-bookworm
-- For Node.js: Use node:20-alpine or node:20-slim
-- For Java: Use eclipse-temurin:21-jre-alpine
-- Add any necessary build dependencies for Alpine
+- Update FROM statement to use the recommended secure image above
+- The image must come from {UBI_REGISTRY}
+- Run the application as a non-root USER
+- Add any packages the app needs with microdnf (UBI minimal) instead of apk
 - Keep all other Dockerfile instructions intact
 - Add comments explaining changes
 
 Return ONLY the fixed Dockerfile content, no explanations or markdown.
 """
     
-    content = extract_code_block(call_bob(prompt))
-    
-    # Clean up markdown code blocks if present
+    reply = call_bob(prompt)
+    try:
+        return _dockerfile_from_reply(reply)
+    except ValueError as first_error:
+        logger.warning("Bob's first Dockerfile reply was not usable, retrying once: %s", first_error)
+
+    # Bob occasionally answers with prose or a question instead of the file: ask again, strictly
+    retry_prompt = prompt + """
+
+IMPORTANT: your previous answer did not contain a Dockerfile.
+Reply with the complete Dockerfile only. The first non-comment line must be a FROM instruction.
+Do not ask questions, do not explain, and do not write any text outside the Dockerfile.
+"""
+    return _dockerfile_from_reply(call_bob(retry_prompt))
+
+
+def _dockerfile_from_reply(reply: str) -> str:
+    """
+    Turn Bob's reply into Dockerfile text.
+
+    Accepts a bare Dockerfile, a Dockerfile in a ``` fence, or one surrounded by
+    explanation. Raises ValueError (with a short, single-line snippet of the reply
+    for the server log) when the reply holds no FROM instruction.
+    """
+    reply = reply or ""
+
+    # Prefer the fenced block that holds the Dockerfile (not e.g. a "docker build" example)
+    content = reply
+    for block in _FENCED_BLOCK.findall(reply):
+        if _FROM_LINE.search(block):
+            content = block
+            break
+
+    # Drop any text before the first FROM (keep ARG lines that may legally precede it)
+    match = _FROM_LINE.search(content)
+    if not match:
+        snippet = " ".join(reply.split())[:_MAX_LOGGED_REPLY]
+        raise ValueError(
+            f"Bob did not return a valid Dockerfile (no FROM instruction); reply started with: {snippet!r}"
+        )
+    before_from = content[:match.start()]
+    arg_lines = [line for line in before_from.splitlines() if re.match(r'^\s*ARG\s', line, re.IGNORECASE)]
+    content = "\n".join(arg_lines + [content[match.start():].lstrip()])
+
+    # Remove any markdown fences that are left
     content = content.replace("```dockerfile", "").replace("```Dockerfile", "").replace("```", "")
-    
-    # Remove any leading/trailing whitespace from each line
-    lines = content.split('\n')
+
     cleaned_lines = []
-    
-    for line in lines:
+    for line in content.split('\n'):
         # Skip empty lines at the start
         if not cleaned_lines and not line.strip():
             continue
-        
+
         # Remove inline comments that break Dockerfile syntax
         # Keep comments that are on their own line (start with #)
         if line.strip() and not line.strip().startswith('#'):
-            # Remove inline comments after instructions
             if '#' in line:
-                # Find the position of # that's not part of a string
                 parts = line.split('#', 1)
                 if len(parts) == 2:
                     # Keep the instruction part, remove the comment
                     line = parts[0].rstrip()
-        
+
         cleaned_lines.append(line)
-    
-    content = '\n'.join(cleaned_lines).strip()
-    
-    # Validate basic Dockerfile syntax
-    if not content.startswith('FROM'):
-        # Try to find FROM statement
-        for i, line in enumerate(cleaned_lines):
-            if line.strip().startswith('FROM'):
-                content = '\n'.join(cleaned_lines[i:]).strip()
-                break
-    
-    return content
+
+    return use_anonymous_ubi_registry('\n'.join(cleaned_lines).strip())
 
 
 def update_dockerfile(dockerfile_path: str, cve_findings: list) -> bool:

@@ -9,7 +9,8 @@ def normalize_k8s_findings(findings):
             "id": finding.get("id"),
             "severity": finding.get("severity"),
             "title": finding.get("title"),
-            "message": finding.get("message")
+            "message": finding.get("message"),
+            "file": finding.get("file")
         })
 
     return normalized
@@ -27,7 +28,9 @@ def normalize_cves(cves):
             "severity": cve.get("severity"),
             "package": cve.get("package"),
             "installed_version": cve.get("installed"),
-            "fixed_version": cve.get("fixed")
+            "fixed_version": cve.get("fixed"),
+            "file": cve.get("file"),
+            "image": cve.get("image")
         })
 
     return normalized
@@ -77,40 +80,10 @@ def normalize_cspm(cspm_findings):
             "type": "CSPM",
             "id": finding.get("id"),
             "severity": finding.get("severity"),
+            "title": finding.get("title"),
             "message": finding.get("message"),
+            "file": finding.get("file"),
             "resource": finding.get("resource")
-        })
-
-    return normalized
-
-
-def normalize_runtime(runtime_findings):
-
-    normalized = []
-
-    for finding in runtime_findings:
-
-        normalized.append({
-            "type": "RUNTIME",
-            "id": finding.get("rule"),
-            "severity": finding.get("severity"),
-            "message": finding.get("message")
-        })
-
-    return normalized
-
-
-def normalize_network(network_findings):
-
-    normalized = []
-
-    for finding in network_findings:
-
-        normalized.append({
-            "type": "NETWORK",
-            "id": finding.get("id"),
-            "severity": finding.get("severity"),
-            "message": finding.get("message")
         })
 
     return normalized
@@ -121,9 +94,7 @@ def combine_findings(
     cve_findings,
     sast_findings=None,
     secret_findings=None,
-    cspm_findings=None,
-    runtime_findings=None,
-    network_findings=None
+    cspm_findings=None
 ):
     """Merge every scanner's findings into one normalized list.
 
@@ -141,8 +112,4 @@ def combine_findings(
         normalize_secrets(secret_findings or [])
         +
         normalize_cspm(cspm_findings or [])
-        +
-        normalize_runtime(runtime_findings or [])
-        +
-        normalize_network(network_findings or [])
     )

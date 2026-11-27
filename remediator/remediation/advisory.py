@@ -11,21 +11,21 @@ ADVISORY_REPORT = "reports/advisory.md"
 
 def generate_advisory(findings) -> str:
     """
-    Recommend remediation for findings that cannot be fixed by editing files
-    in the repository: cloud posture (CSPM), runtime behaviour and network
-    exposure. Saves the recommendations to reports/advisory.md.
+    Recommend remediation for cloud posture findings (CSPM) reported on the
+    repository's infrastructure-as-code (Terraform, CloudFormation, Helm, ...).
+    These are not applied automatically. Saves the recommendations to
+    reports/advisory.md.
     """
     if not findings:
         return ""
 
     prompt = f"""
-You are an expert cloud and Kubernetes security engineer.
+You are an expert cloud security engineer.
 
-For each finding below, give a short, concrete remediation recommendation.
-Cover cloud posture issues (public S3 buckets, overly permissive IAM, open
-security groups), suspicious runtime behaviour (shell access in containers,
-binary tampering, privilege escalation) and network exposure (exposed
-Kubernetes dashboards, anonymous kubelet access, publicly reachable APIs).
+Each finding below is a cloud misconfiguration found in the repository's
+infrastructure-as-code (the "file" field says where). For each finding, give a
+short, concrete remediation recommendation, for example the setting or
+resource to change.
 
 Findings:
 {findings}
