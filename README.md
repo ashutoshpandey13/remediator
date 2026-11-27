@@ -97,8 +97,6 @@ python -m remediator.web.app
 
 The startup log lists which settings are set (names only, never values).
 
-**Helper script:** `scripts/start_web_ui.sh` checks `.env`, the venv, Docker and the scanner tools, then starts the server.
-
 **Command line:** the same workflow without the browser: `python -m remediator.cli https://github.com/owner/repo.git` (prints the PR URL and JIRA keys; the exit code is non-zero on failure).
 
 **Dependencies:** `requirements.in` / `requirements-semgrep.in` list the direct packages; `requirements.txt` / `requirements-semgrep.txt` are the hash-locked results. Regenerate them (Python 3.12) with `pip-compile --generate-hashes --allow-unsafe -o requirements.txt requirements.in` (and the same for the semgrep pair), then audit with `pip-audit -r requirements.txt`. Semgrep pins `mcp`, `opentelemetry-api` and `wcmatch` to versions that have published advisories; they run only inside the separate semgrep environment, never in the web app.
@@ -195,7 +193,6 @@ audesec-poc/
 │       ├── security.py         #   access token, Host/Origin check, security headers
 │       └── store.py            #   thread-safe scan state with retention and a concurrency cap
 ├── remediator-ui/              # Frontend (served by the Flask backend; no inline scripts)
-├── scripts/start_web_ui.sh     # Environment check + start
 ├── sample_data/                # Example CSPM / runtime / network JSON exports
 ├── tests/                      # Offline unit tests
 ├── requirements.in             # Direct dependencies of the app

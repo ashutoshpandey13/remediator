@@ -510,12 +510,6 @@ header h1 {
     font-size: 0.9rem;
 }
 
-.advisory-note {
-    margin-top: 15px;
-    color: #666;
-    font-size: 0.85rem;
-}
-
 .delivery-section {
     margin-top: 20px;
     padding: 20px;
@@ -592,6 +586,12 @@ header h1 {
     margin-top: 20px;
     font-size: 2rem;
     opacity: 0.7;
+}
+
+.advisory-note {
+    margin-top: 15px;
+    color: #666;
+    font-size: 0.85rem;
 }
 
 .advisory-text {

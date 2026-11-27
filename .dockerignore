@@ -1,94 +1,39 @@
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-ENV/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
-*.egg
+dist/
+build/
 
 # Virtual environments
 venv/
-ENV/
 env/
 
-# IDE
+# IDE / OS
 .vscode/
 .idea/
 *.swp
-*.swo
 *~
 .DS_Store
 
-# Git
+# Not needed in the image
 .git/
 .gitignore
-.gitattributes
-
-# Documentation (not needed in container)
+.dockerignore
+Dockerfile
+tests/
+sample_data/
 *.md
 !README.md
-
-# Test files
-tests/
-test_*.py
-*_test.py
-
-# CI/CD
-.github/
-.gitlab-ci.yml
-.travis.yml
-
-# Logs
 *.log
-logs/
+tmp/
+*.tmp
+*.bak
+
+# Per-scan clones (generated at runtime)
+security-remediation-*/
 
 # Environment files hold secrets: never copy them into an image (use --env-file at run time)
 .env
 .env.*
 !.env.example
-
-# Temporary files
-tmp/
-temp/
-*.tmp
-
-# Cloned repositories (will be created at runtime)
-cloned_repo/
-security-remediation-*/
-
-# Reports (will be mounted as volume)
-reports/*.json
-
-# Node modules (if any)
-node_modules/
-
-# Docker files (not needed inside container)
-Dockerfile
-docker-compose.yml
-.dockerignore
-
-# Backup files
-*.bak
-*.backup
-*~
-
-# OS files
-Thumbs.db
-.DS_Store

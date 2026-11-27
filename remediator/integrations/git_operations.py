@@ -488,48 +488,6 @@ def create_pull_request(
     return pr_url
 
 
-def merge_pull_request(
-    pr_url: str,
-    github_token: Optional[str] = None,
-    merge_method: str = "squash"
-) -> bool:
-    """
-    Merge a pull request through the GitHub REST API (no GitHub CLI needed).
-    
-    Args:
-        pr_url: Pull request URL
-        github_token: GitHub personal access token
-        merge_method: Merge method (merge, squash, rebase)
-        
-    Returns:
-        True if merged, False if the PR cannot be merged right now (checks pending, conflicts)
-    """
-    token = github_token or os.getenv("GITHUB_TOKEN")
-    
-    if not token:
-        raise Exception("GitHub token not provided. Set GITHUB_TOKEN environment variable.")
-
-    if merge_method not in ("merge", "squash", "rebase"):
-        raise ValueError("Invalid merge method")
-    
-    # Format: https://github.com/owner/repo/pull/123
-    match = re.match(r'^https://github\.com/([A-Za-z0-9._-]+/[A-Za-z0-9._-]+)/pull/(\d+)/*$', (pr_url or "").strip())
-    if not match:
-        raise Exception("Invalid PR URL format")
-    repo_path, pr_number = match.groups()
-    
-    status, result = _github_api("PUT", f"/repos/{repo_path}/pulls/{pr_number}/merge", token,
-                                 {"merge_method": merge_method})
-    if status == 200 and result.get("merged"):
-        logger.info("PR #%s merged successfully", pr_number)
-        return True
-    if status in (405, 409):
-        # Not mergeable yet: required checks pending, conflicts, or the head changed
-        logger.warning("PR #%s is not mergeable yet: %s", pr_number, _github_error(result, token))
-        return False
-    raise Exception(f"PR merge failed ({status}): {_github_error(result, token)}")
-
-
 _METRIC_LABELS = (
     ("kubernetes", "Kubernetes misconfigurations"),
     ("cve", "Container CVEs"),

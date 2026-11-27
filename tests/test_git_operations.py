@@ -468,32 +468,3 @@ class CreatePullRequestTest(TempDirTestCase):
     def test_redirects_are_never_followed(self):
         handler = go._NoRedirect()
         self.assertIsNone(handler.redirect_request(None, None, 307, "x", {}, "https://evil.example/"))
-
-
-class MergePullRequestTest(TempDirTestCase):
-    PR = "https://github.com/acme/repo/pull/7"
-
-    def _open(self, *responses):
-        return mock.patch.object(go._GITHUB_OPENER, "open", side_effect=list(responses))
-
-    def test_merge_uses_the_api(self):
-        with self._open(FakeResponse(200, {"merged": True})) as opener:
-            self.assertTrue(go.merge_pull_request(self.PR, FAKE_TOKEN, "squash"))
-        request = opener.call_args[0][0]
-        self.assertEqual(request.full_url, "https://api.github.com/repos/acme/repo/pulls/7/merge")
-        self.assertEqual(request.get_method(), "PUT")
-        self.assertEqual(json.loads(request.data), {"merge_method": "squash"})
-
-    def test_not_mergeable_yet_returns_false(self):
-        with self._open(http_error(405, {"message": "Required status checks are pending"})):
-            self.assertFalse(go.merge_pull_request(self.PR, FAKE_TOKEN))
-
-    def test_invalid_input_is_rejected_before_any_request(self):
-        with self._open() as opener:
-            with self.assertRaises(Exception):
-                go.merge_pull_request("https://evil.example/acme/repo/pull/7", FAKE_TOKEN)
-            with self.assertRaises(ValueError):
-                go.merge_pull_request(self.PR, FAKE_TOKEN, "--force")
-            with self.assertRaises(Exception):
-                go.merge_pull_request(self.PR)
-        opener.assert_not_called()
