@@ -1,16 +1,8 @@
-from datetime import datetime
-import os
+import logging
+
+_audit_logger = logging.getLogger("audesec.activity")
 
 
 def log_activity(message):
-
-    os.makedirs("reports", exist_ok=True)
-
-    timestamp = datetime.now().strftime(
-        "%Y-%m-%d %H:%M:%S"
-    )
-
-    line = f"[{timestamp}] {message}\n"
-
-    with open("reports/activity.log", "a") as f:
-        f.write(line)
+    """Record a workflow milestone (goes to the normal log stream, so it is captured with the rest)."""
+    _audit_logger.info("%s", message)

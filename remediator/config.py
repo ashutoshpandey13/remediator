@@ -1,9 +1,7 @@
 import os
-import random
 import re
+import secrets
 import string
-from typing import Optional
-from dataclasses import dataclass
 
 import yaml
 
@@ -19,62 +17,8 @@ def generate_unique_branch_name(base_name: str = "security-remediation") -> str:
         Branch name with random suffix (e.g., security-remediation-a3f9x2)
     """
     # Generate 6 random alphanumeric characters
-    suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
+    suffix = ''.join(secrets.choice(string.ascii_lowercase + string.digits) for _ in range(6))
     return f"{base_name}-{suffix}"
-
-
-@dataclass
-class RepoConfig:
-    """Configuration for repository scanning."""
-    repo_url: str
-    deployment_yaml_path: str = "deployment.yaml"
-    package_json_path: str = "package.json"
-    dockerfile_path: str = "Dockerfile"
-    branch_name: str = None  # Will be generated if not provided
-    
-    def __post_init__(self):
-        """Generate unique branch name if not provided."""
-        if self.branch_name is None:
-            self.branch_name = generate_unique_branch_name()
-    
-
-def get_repo_config_from_input() -> RepoConfig:
-    """
-    Get repository configuration from user input or environment variables.
-    
-    Returns:
-        RepoConfig object with repository details
-    """
-    # Try to get from environment variable first
-    repo_url = os.getenv("REPO_URL")
-    
-    if not repo_url:
-        print("\n" + "="*60)
-        print("🔒 AudeSec-POC - Automated Security Remediation")
-        print("="*60 + "\n")
-        
-        repo_url = input("Enter Git repository URL: ").strip()
-        
-        if not repo_url:
-            raise ValueError("Repository URL is required")
-    
-    # Optional: Get custom paths
-    deployment_path = os.getenv("DEPLOYMENT_YAML_PATH", "deployment.yaml")
-    package_path = os.getenv("PACKAGE_JSON_PATH", "package.json")
-    dockerfile_path = os.getenv("DOCKERFILE_PATH", "Dockerfile")
-    
-    # Generate unique branch name (or use env var if provided)
-    branch_name = os.getenv("BRANCH_NAME")
-    if not branch_name:
-        branch_name = generate_unique_branch_name()
-    
-    return RepoConfig(
-        repo_url=repo_url,
-        deployment_yaml_path=deployment_path,
-        package_json_path=package_path,
-        dockerfile_path=dockerfile_path,
-        branch_name=branch_name
-    )
 
 
 # Directories that never contain the repository's own assets
@@ -137,32 +81,6 @@ def discover_repo_files(repo_path: str) -> dict:
     for paths in found.values():
         paths.sort()
     return found
-
-
-def find_files_in_repo(repo_path: str, config: RepoConfig = None) -> dict:
-    """
-    Find the first file of each type in the cloned repository.
-
-    Kept for the CLI, which handles a single file of each type.
-    The web flow uses discover_repo_files().
-
-    Args:
-        repo_path: Path to cloned repository
-        config: Unused, kept for compatibility
-
-    Returns:
-        Dictionary with absolute file paths (None when not found)
-    """
-    found = discover_repo_files(repo_path)
-
-    def first(rel_paths):
-        return os.path.join(repo_path, rel_paths[0]) if rel_paths else None
-
-    return {
-        "deployment_yaml": first(found["k8s_manifests"]),
-        "package_json": first(found["package_jsons"]),
-        "dockerfile": first(found["dockerfiles"])
-    }
 
 
 def get_repository_config(repo_url: str) -> dict:

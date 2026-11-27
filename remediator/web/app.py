@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, jsonify
-from flask_socketio import SocketIO, emit
 import threading
 import os
 import subprocess
@@ -30,7 +29,10 @@ from remediator.scanners.scanner import scan_k8s_config, summarize_findings
 from remediator.scanners.image_scanner import scan_image, summarize_cves
 from remediator.scanners.sast_scanner import scan_code, summarize_sast
 from remediator.scanners.secret_scanner import scan_secrets, summarize_secrets
-from remediator.scanners.cspm_scanner import scan_cspm, summarize_cspm
+from remediator.scanners.cspm_scanner import scan_cspm, summarize_cspm, scan_cspm_feed, summarize_cspm_feed
+from remediator.scanners.runtime_scanner import scan_runtime, summarize_runtime
+from remediator.scanners.network_scanner import scan_network, summarize_network
+from remediator.scanners.feed_loader import FeedNotConfigured
 from remediator.findings import combine_findings
 from remediator.integrations.jira_agent import create_jira_ticket, link_pr_to_ticket, is_jira_configured
 from remediator.remediation.bob_client import ensure_bob_configured
@@ -45,6 +47,8 @@ from remediator.validation.dependency_validator import (
 )
 from remediator.remediation.dockerfile_remediation import generate_dockerfile_remediation
 from remediator.logger import log_activity
+from remediator.web import security
+from remediator.web.store import ScanStore
 
 logging.basicConfig(
     level=os.getenv('LOG_LEVEL', 'INFO').upper(),
@@ -65,11 +69,17 @@ app = Flask(
     template_folder=os.path.join(UI_DIR, "templates"),
     static_folder=os.path.join(UI_DIR, "static"),
 )
-app.config['SECRET_KEY'] = 'your-secret-key-here'
-socketio = SocketIO(app, cors_allowed_origins="*")
+# The API only accepts small JSON bodies (a repository URL)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024
 
-# Store scan results
-scan_results = {}
+# Scan state, shared between the scan threads and the HTTP threads
+scan_results = ScanStore(
+    max_concurrent=int(os.getenv('MAX_CONCURRENT_SCANS', '2')),
+    retention_seconds=int(os.getenv('SCAN_RETENTION_SECONDS', str(24 * 3600)))
+)
+
+# Address the server is bound to (set in main). Requests must address this server.
+BIND_HOST = os.getenv('HOST', '127.0.0.1')
 
 # Workflow steps: (id, icon, title, default message).
 # The template renders this list, so the UI always matches the workflow below.
@@ -108,14 +118,14 @@ STEPS = [
     (STEP_SAST, "🧬", "SAST Scan", "Scanning source code for vulnerabilities..."),
     (STEP_SECRETS, "🔑", "Secret Scan", "Scanning for hardcoded secrets..."),
     (STEP_CSPM, "☁️", "Cloud Posture (IaC)", "Scanning infrastructure-as-code for cloud misconfigurations..."),
-    (STEP_RUNTIME, "🏃", "Runtime Security", "Runtime security is not part of a repository scan..."),
-    (STEP_NETWORK, "🌐", "Network Exposure", "Network exposure is not part of a repository scan..."),
+    (STEP_RUNTIME, "🏃", "Runtime Security", "Checking runtime security events..."),
+    (STEP_NETWORK, "🌐", "Network Exposure", "Checking network exposure..."),
     (STEP_COMBINE, "📊", "Combine Findings", "Analyzing security findings..."),
     (STEP_JIRA, "🎫", "JIRA Tickets", "Creating tracking tickets..."),
     (STEP_REMEDIATE, "🤖", "AI Remediation", "Generating fixes with AI..."),
     (STEP_APPLY, "✏️", "Apply Fixes", "Applying security fixes..."),
     (STEP_SOURCE_FIX, "🛠️", "Source Code Fixes", "Fixing code vulnerabilities and secrets..."),
-    (STEP_ADVISORY, "📝", "Posture Advisory", "Recommending cloud posture fixes..."),
+    (STEP_ADVISORY, "📝", "Posture Advisory", "Recommending cloud, runtime and network fixes..."),
     (STEP_VALIDATE, "✅", "Validation", "Validating fixed files..."),
     (STEP_DOCKERFILE, "🔧", "Dockerfile Update", "Updating Dockerfile..."),
     (STEP_REBUILD, "🔨", "Rebuild Container", "Rebuilding container image..."),
@@ -129,6 +139,17 @@ JIRA_SEVERITIES = ("HIGH", "CRITICAL")
 
 # Findings sent to the AI for one package.json
 MAX_PACKAGE_FINDINGS = 20
+
+# Longest advisory text kept in a scan result
+MAX_ADVISORY_CHARS = 20000
+
+# One image build must never block a scan forever
+DOCKER_BUILD_TIMEOUT_SECONDS = int(os.getenv('DOCKER_BUILD_TIMEOUT_SECONDS', '1200'))
+
+# Every image built for a scan carries this label, so leftovers of a scan that was killed
+# can be recognised (and only those) and removed later
+IMAGE_LABEL = 'audesec.managed=true'
+STALE_IMAGE_MAX_AGE = '1h'
 
 DEPENDENCY_SECTIONS = (
     "dependencies",
@@ -151,12 +172,7 @@ def emit_progress(scan_id, step, status, message, data=None):
     log_level = logging.ERROR if status == 'error' else logging.INFO
     logger.log(log_level, '[%s] step=%s status=%s %s',
                scan_id, step, status, _URL_CREDENTIALS.sub('', message))
-    socketio.emit('progress_update', progress, room=scan_id)
-    
-    # Store in results
-    if scan_id not in scan_results:
-        scan_results[scan_id] = {'steps': [], 'status': 'running'}
-    scan_results[scan_id]['steps'].append(progress)
+    scan_results.append_step(scan_id, progress)
 
 
 def run_optional_scan(scan_id, step, label, scan_fn):
@@ -172,6 +188,9 @@ def run_optional_scan(scan_id, step, label, scan_fn):
 
     try:
         findings = scan_fn()
+    except FeedNotConfigured as e:
+        emit_progress(scan_id, step, 'info', f'{label} skipped: {e}')
+        return [], False
     except FileNotFoundError:
         emit_progress(scan_id, step, 'info', f'{label} skipped: scanner is not installed')
         return [], False
@@ -262,9 +281,10 @@ def build_docker_image(repo_dir, dockerfile_rel, tag):
     dockerfile = os.path.join(repo_dir, dockerfile_rel)
     context = os.path.dirname(dockerfile)
     return subprocess.run(
-        ["docker", "build", "-f", dockerfile, "-t", tag, context],
+        ["docker", "build", "--label", IMAGE_LABEL, "-f", dockerfile, "-t", tag, context],
         capture_output=True,
-        text=True
+        text=True,
+        timeout=DOCKER_BUILD_TIMEOUT_SECONDS
     )
 
 
@@ -278,12 +298,37 @@ def docker_failure_reason(stderr):
 
 
 def remove_docker_images(tags):
-    """Best-effort removal of the images built during a scan."""
+    """
+    Remove the images built during a scan, then the build cache those builds left
+    behind (unused cache only; cache that a running build needs is kept).
+    Set PRUNE_BUILD_CACHE=false to keep the cache, e.g. on a shared Docker host.
+    """
     for tag in tags:
         try:
             subprocess.run(["docker", "rmi", "-f", tag], capture_output=True, timeout=120)
         except (OSError, subprocess.SubprocessError):
             logger.warning('Could not remove image %s', tag)
+
+    if tags and os.getenv('PRUNE_BUILD_CACHE', 'true').lower() != 'false':
+        try:
+            subprocess.run(["docker", "builder", "prune", "-f"], capture_output=True, timeout=300)
+        except (OSError, subprocess.SubprocessError):
+            logger.warning('Could not prune the docker build cache')
+
+
+def remove_stale_images():
+    """Remove images of earlier scans that never got to clean up (e.g. the app was killed)."""
+    try:
+        listed = subprocess.run(
+            ["docker", "images", "-q", "--filter", f"label={IMAGE_LABEL}",
+             "--filter", f"until={STALE_IMAGE_MAX_AGE}"],
+            capture_output=True, text=True, timeout=60)
+        image_ids = sorted(set(listed.stdout.split()))
+        if listed.returncode == 0 and image_ids:
+            subprocess.run(["docker", "rmi", "-f", *image_ids], capture_output=True, timeout=300)
+            logger.info('Removed %d stale scan image(s)', len(image_ids))
+    except (OSError, subprocess.SubprocessError):
+        logger.warning('Could not remove stale scan images')
 
 
 def collect_js_sources(root):
@@ -343,9 +388,9 @@ def check_fixed_package_json(package_json_path, original_text):
 
 def set_pr_result(scan_id, status, message, pr_url=None):
     """Record the outcome of the PR step (short, safe text only) and report it to the UI."""
-    scan_results[scan_id]['pr_url'] = pr_url
-    scan_results[scan_id]['pr_status'] = status
-    scan_results[scan_id]['pr_message'] = message
+    scan_results.set(scan_id, pr_url=pr_url)
+    scan_results.set(scan_id, pr_status=status)
+    scan_results.set(scan_id, pr_message=message)
     emit_progress(scan_id, STEP_PR, 'success' if pr_url else 'info', message,
                   {'pr_url': pr_url, 'detail': f'({pr_url})' if pr_url else ''})
 
@@ -432,8 +477,8 @@ def get_jira_base_url():
 def set_jira_link_result(scan_id, status, message, links=None):
     """Record the outcome of the JIRA link step (short, safe text only) and report it to the UI."""
     links = links or {}
-    scan_results[scan_id]['jira_links'] = links
-    scan_results[scan_id]['jira_link_message'] = message
+    scan_results.set(scan_id, jira_links=links)
+    scan_results.set(scan_id, jira_link_message=message)
     emit_progress(scan_id, STEP_JIRA_LINK, status, message, {
         'links': links,
         'detail': f'({", ".join(links)})' if links else ''
@@ -462,8 +507,8 @@ def link_pr_to_jira_tickets(scan_id, pr_url, jira_keys, metrics, files_updated):
     This never raises: one ticket failing does not stop the others, and the scan
     always continues. Only short, safe messages reach the UI.
     """
-    scan_results[scan_id]['jira_links'] = {}
-    scan_results[scan_id]['jira_link_message'] = ''
+    scan_results.set(scan_id, jira_links={})
+    scan_results.set(scan_id, jira_link_message='')
     try:
         if not pr_url:
             set_jira_link_result(scan_id, 'info', 'No pull request was raised, so no JIRA tickets were linked')
@@ -495,6 +540,19 @@ def link_pr_to_jira_tickets(scan_id, pr_url, jira_keys, metrics, files_updated):
         set_jira_link_result(scan_id, 'info', 'Could not link the pull request to JIRA tickets (see server log)')
 
 
+def public_error_message(error):
+    """
+    Text that is safe to show to the user for a failed scan. Known, actionable
+    problems get a specific message; anything else is generic (details are in the server log).
+    """
+    text = str(error)
+    if text.startswith('BOB_API_KEY is not set'):
+        return 'AI remediation is not configured on the server (BOB_API_KEY is missing).'
+    if text.startswith('Git clone'):
+        return 'The repository could not be cloned. Check the URL and that this server can access it.'
+    return 'The scan failed unexpectedly. See the server log for details.'
+
+
 def run_security_scan(repo_url, scan_id):
     """Run the security scan workflow with progress updates."""
     clone_dir = None
@@ -508,6 +566,7 @@ def run_security_scan(repo_url, scan_id):
         # Step 0: Cleanup of clones left behind by earlier scans
         emit_progress(scan_id, STEP_CLEANUP, 'running', 'Cleaning up previous clones...')
         cleanup_stale_clones()
+        remove_stale_images()
         emit_progress(scan_id, STEP_CLEANUP, 'success', 'Cleanup complete')
         
         # Step 1: Get repository configuration
@@ -524,7 +583,7 @@ def run_security_scan(repo_url, scan_id):
         clone_dir = os.path.abspath(config['clone_dir'])
         clone_dir = clone_repository(repo_url, clone_dir)
         default_branch = get_default_branch(clone_dir)
-        scan_results[scan_id]['default_branch'] = default_branch
+        scan_results.set(scan_id, default_branch=default_branch)
         emit_progress(scan_id, STEP_CLONE, 'success', f'Repository cloned (default branch: {default_branch})', {
             'default_branch': default_branch
         })
@@ -632,16 +691,25 @@ def run_security_scan(repo_url, scan_id):
             scan_id, STEP_SECRETS, 'Secret scan',
             lambda: summarize_secrets(scan_secrets(clone_dir))
         )
-        cspm_findings, _ = run_optional_scan(
-            scan_id, STEP_CSPM, 'Cloud posture scan',
-            lambda: summarize_cspm(scan_cspm(clone_dir))
+        def scan_cloud_posture():
+            # The repository's infrastructure-as-code (Trivy) plus, when CSPM_FINDINGS_PATH
+            # is set, a findings export from a cloud scanner such as Prowler
+            findings = summarize_cspm(scan_cspm(clone_dir))
+            if os.getenv('CSPM_FINDINGS_PATH'):
+                findings += summarize_cspm_feed(scan_cspm_feed())
+            return findings
+
+        cspm_findings, _ = run_optional_scan(scan_id, STEP_CSPM, 'Cloud posture scan', scan_cloud_posture)
+        # Runtime events and network exposure come from a running environment, so they are
+        # read from findings exports (Falco, kube-hunter, ...) named by environment variables
+        runtime_findings, _ = run_optional_scan(
+            scan_id, STEP_RUNTIME, 'Runtime scan',
+            lambda: summarize_runtime(scan_runtime())
         )
-        # Runtime events and live network exposure come from a running cluster or
-        # cloud account, so a repository scan has nothing to check for them
-        emit_progress(scan_id, STEP_RUNTIME, 'info',
-                      'Runtime security is not applicable to a repository scan (needs a running workload)')
-        emit_progress(scan_id, STEP_NETWORK, 'info',
-                      'Network exposure is not applicable to a repository scan (needs a live environment)')
+        network_findings, _ = run_optional_scan(
+            scan_id, STEP_NETWORK, 'Network exposure scan',
+            lambda: summarize_network(scan_network())
+        )
         
         # Step 11: Combine findings
         emit_progress(scan_id, STEP_COMBINE, 'running', 'Combining security findings...')
@@ -650,7 +718,9 @@ def run_security_scan(repo_url, scan_id):
             cve_findings,
             sast_findings,
             secret_findings,
-            cspm_findings
+            cspm_findings,
+            runtime_findings,
+            network_findings
         )
         total_issues = len(all_findings)
         emit_progress(scan_id, STEP_COMBINE, 'success', f'Total issues found: {total_issues}', {
@@ -660,10 +730,13 @@ def run_security_scan(repo_url, scan_id):
             'sast': len(sast_findings),
             'secrets': len(secret_findings),
             'cspm': len(cspm_findings),
+            'runtime': len(runtime_findings),
+            'network': len(network_findings),
             'detail': (
                 f'(K8s: {len(k8s_findings)}, CVE: {len(cve_findings)}, '
                 f'SAST: {len(sast_findings)}, Secrets: {len(secret_findings)}, '
-                f'Cloud posture: {len(cspm_findings)})'
+                f'Cloud posture: {len(cspm_findings)}, Runtime: {len(runtime_findings)}, '
+                f'Network: {len(network_findings)})'
             )
         })
         log_activity('Unified findings generated')
@@ -684,10 +757,10 @@ def run_security_scan(repo_url, scan_id):
         except Exception as e:
             emit_progress(scan_id, STEP_JIRA, 'info', f'JIRA integration not configured: {str(e)}')
         # Kept for the PR body and for linking the PR to the tickets
-        scan_results[scan_id]['jira_keys'] = list(jira_keys)
+        scan_results.set(scan_id, jira_keys=list(jira_keys))
         jira_base_url = get_jira_base_url()
         if jira_base_url:
-            scan_results[scan_id]['jira_base_url'] = jira_base_url
+            scan_results.set(scan_id, jira_base_url=jira_base_url)
         
         # Step 13: Generate remediation per Kubernetes manifest and per package.json.
         # Each call only gets that file's findings; a failure only skips that file.
@@ -795,12 +868,13 @@ def run_security_scan(repo_url, scan_id):
         
         # Step 16: Advisory for findings that cannot be fixed in the repository
         emit_progress(scan_id, STEP_ADVISORY, 'running', 'Generating posture recommendations...')
-        posture_findings = [f for f in all_findings if f['type'] == 'CSPM']
+        posture_findings = [f for f in all_findings if f['type'] in ('CSPM', 'RUNTIME', 'NETWORK')]
         if posture_findings:
             try:
-                generate_advisory(posture_findings)
+                advisory_text = generate_advisory(posture_findings)
+                scan_results.set(scan_id, advisory=advisory_text[:MAX_ADVISORY_CHARS])
                 emit_progress(scan_id, STEP_ADVISORY, 'success',
-                              f'Recommendations written for {len(posture_findings)} findings (reports/advisory.md)', {
+                              f'Recommendations written for {len(posture_findings)} findings', {
                     'count': len(posture_findings),
                     'detail': f'({len(posture_findings)} findings)'
                 })
@@ -808,7 +882,7 @@ def run_security_scan(repo_url, scan_id):
                 logger.exception("Advisory generation failed")
                 emit_progress(scan_id, STEP_ADVISORY, 'info', 'Advisory skipped: it failed (see server log)')
         else:
-            emit_progress(scan_id, STEP_ADVISORY, 'info', 'No cloud posture findings')
+            emit_progress(scan_id, STEP_ADVISORY, 'info', 'No cloud, runtime or network findings')
         
         # Step 17: Validate every fixed file. A file that fails is restored to its
         # original content and does not affect the others.
@@ -947,7 +1021,7 @@ def run_security_scan(repo_url, scan_id):
         
         # The list of changed files is final here (needed to commit only these files)
         files_updated = sorted(set(files_updated))
-        scan_results[scan_id]['files_updated'] = files_updated
+        scan_results.set(scan_id, files_updated=files_updated)
         
         # Step 20: Re-scan every Kubernetes manifest (images were re-scanned in step 19)
         emit_progress(scan_id, STEP_RESCAN, 'running', 'Re-scanning fixed assets...')
@@ -1012,7 +1086,9 @@ def run_security_scan(repo_url, scan_id):
             sum(m['after'] for m in metrics.values())
         )
         metrics['advisory'] = {
-            'cspm': len(cspm_findings)
+            'cspm': len(cspm_findings),
+            'runtime': len(runtime_findings),
+            'network': len(network_findings)
         }
         
         emit_progress(scan_id, STEP_METRICS, 'success', 'Scan complete!', metrics)
@@ -1021,22 +1097,22 @@ def run_security_scan(repo_url, scan_id):
         # Step 22: Raise the PR. It must happen here, before the clone is removed, and a
         # failure is only reported: it never fails the scan.
         raise_pull_request(scan_id, repo_url, clone_dir, config['branch'],
-                           scan_results[scan_id]['default_branch'], files_updated,
+                           scan_results.get(scan_id, 'default_branch'), files_updated,
                            metrics, all_findings, jira_keys)
         
         # Step 23: Attach the PR to the JIRA tickets (failures are only reported)
-        link_pr_to_jira_tickets(scan_id, scan_results[scan_id].get('pr_url'),
+        link_pr_to_jira_tickets(scan_id, scan_results.get(scan_id, 'pr_url'),
                                 jira_keys, metrics, files_updated)
         
         # Mark as complete
-        scan_results[scan_id]['status'] = 'complete'
-        scan_results[scan_id]['metrics'] = metrics
+        scan_results.set(scan_id, status='complete')
+        scan_results.set(scan_id, metrics=metrics)
         
     except Exception as e:
         logger.exception('[%s] Scan failed', scan_id)
-        emit_progress(scan_id, -1, 'error', f'Error: {str(e)}')
-        scan_results[scan_id]['status'] = 'error'
-        scan_results[scan_id]['error'] = str(e)
+        message = public_error_message(e)
+        emit_progress(scan_id, -1, 'error', f'Error: {message}')
+        scan_results.set(scan_id, status='error', error=message)
     finally:
         # Every scan removes its own clone and images, whether it succeeded or not
         if clone_dir:
@@ -1044,17 +1120,72 @@ def run_security_scan(repo_url, scan_id):
         remove_docker_images(built_images)
 
 
+@app.before_request
+def check_request():
+    """Host check for every request; access token for the API."""
+    if not security.host_is_allowed(request.headers.get('Host', ''), BIND_HOST):
+        return jsonify({'error': 'Forbidden'}), 403
+
+    # Browsers send Origin on cross-origin requests: only this server's own pages may call the API
+    origin = request.headers.get('Origin')
+    if origin and not security.host_is_allowed(urlparse(origin).netloc, BIND_HOST):
+        return jsonify({'error': 'Forbidden'}), 403
+
+    if request.path.startswith('/api/'):
+        expected = security.get_access_token()
+        if expected and not security.token_matches(security.request_token(request.headers), expected):
+            return jsonify({'error': 'Unauthorized'}), 401
+
+
+@app.after_request
+def add_security_headers(response):
+    for name, value in security.SECURITY_HEADERS.items():
+        response.headers.setdefault(name, value)
+    # Static files may be cached; everything else (API responses, the page) may not
+    if request.path.startswith('/static/'):
+        response.headers['Cache-Control'] = 'public, max-age=300'
+    return response
+
+
+@app.errorhandler(404)
+def handle_not_found(error):
+    return jsonify({'error': 'Not found'}), 404
+
+
+@app.errorhandler(405)
+def handle_method_not_allowed(error):
+    return jsonify({'error': 'Method not allowed'}), 405
+
+
+@app.errorhandler(413)
+def handle_too_large(error):
+    return jsonify({'error': 'Request too large'}), 413
+
+
+@app.errorhandler(Exception)
+def handle_unexpected_error(error):
+    logger.exception('Unhandled error in %s %s', request.method, request.path)
+    return jsonify({'error': 'Internal server error'}), 500
+
+
 @app.route('/')
 def index():
     """Render the main page."""
-    return render_template('index.html', steps=STEPS)
+    return render_template('index.html', steps=STEPS,
+                           auth_required=bool(security.get_access_token()))
+
+
+@app.route('/healthz')
+def healthz():
+    """Liveness probe (no scan data, no auth)."""
+    return jsonify({'status': 'ok'})
 
 
 @app.route('/api/scan', methods=['POST'])
 def start_scan():
     """Start a new security scan."""
-    data = request.json
-    repo_url = data.get('repo_url')
+    data = request.get_json(silent=True) if request.is_json else None
+    repo_url = data.get('repo_url') if isinstance(data, dict) else None
     
     if not repo_url:
         return jsonify({'error': 'Repository URL is required'}), 400
@@ -1064,8 +1195,11 @@ def start_scan():
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
     
-    # Generate scan ID
-    scan_id = f"scan_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    scan_id = security.new_scan_id()
+    
+    # Every scan clones, builds and calls external services: limit how many run at once
+    if not scan_results.try_start(scan_id):
+        return jsonify({'error': 'Too many scans are running. Try again in a few minutes.'}), 429
     
     # Start scan in background thread
     thread = threading.Thread(target=run_security_scan, args=(repo_url, scan_id))
@@ -1082,37 +1216,17 @@ def start_scan():
 @app.route('/api/scan/<scan_id>')
 def get_scan_status(scan_id):
     """Get the status of a scan."""
-    if scan_id not in scan_results:
+    scan = scan_results.snapshot(scan_id) if security.SCAN_ID_PATTERN.match(scan_id) else None
+    if scan is None:
         return jsonify({'error': 'Scan not found'}), 404
     
-    return jsonify(scan_results[scan_id])
-
-
-@socketio.on('connect')
-def handle_connect():
-    """Handle client connection."""
-    print('Client connected')
-
-
-@socketio.on('disconnect')
-def handle_disconnect():
-    """Handle client disconnection."""
-    print('Client disconnected')
-
-
-@socketio.on('join_scan')
-def handle_join_scan(data):
-    """Join a scan room for updates."""
-    scan_id = data.get('scan_id')
-    if scan_id:
-        from flask_socketio import join_room
-        join_room(scan_id)
-        emit('joined', {'scan_id': scan_id})
+    return jsonify(scan)
 
 
 def log_startup_config():
     """Log which settings are configured. Names only - values are never logged."""
-    settings = ('BOB_API_KEY', 'GITHUB_TOKEN', 'JIRA_URL', 'JIRA_EMAIL', 'JIRA_API_TOKEN')
+    settings = ('BOB_API_KEY', 'GITHUB_TOKEN', 'JIRA_URL', 'JIRA_EMAIL', 'JIRA_API_TOKEN',
+                'AUDESEC_ACCESS_TOKEN')
     for name in settings:
         if os.getenv(name):
             logger.info('Config %-22s set', name)
@@ -1120,9 +1234,27 @@ def log_startup_config():
             logger.warning('Config %-22s NOT set', name)
 
 
-if __name__ == '__main__':
+def main():
+    global BIND_HOST
+    from waitress import serve
+
     port = int(os.getenv('PORT', 8000))
-    host = os.getenv('HOST', '127.0.0.1')
+    BIND_HOST = os.getenv('HOST', '127.0.0.1')
+    token = security.get_access_token()
+
+    try:
+        security.validate_startup(BIND_HOST, token)
+    except RuntimeError as e:
+        logger.error('%s', e)
+        raise SystemExit(1)
+
     log_startup_config()
-    logger.info('Starting AudeSec web UI on http://%s:%s', host, port)
-    socketio.run(app, debug=False, host=host, port=port)
+    if not token:
+        logger.warning('No AUDESEC_ACCESS_TOKEN set: the API is open to every local user of %s', BIND_HOST)
+    logger.info('Starting AudeSec web UI on http://%s:%s', BIND_HOST, port)
+    serve(app, host=BIND_HOST, port=port, threads=int(os.getenv('WEB_THREADS', '8')),
+          max_request_body_size=app.config['MAX_CONTENT_LENGTH'], ident='AudeSec')
+
+
+if __name__ == '__main__':
+    main()

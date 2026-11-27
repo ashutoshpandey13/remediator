@@ -108,14 +108,13 @@ class LinkPrToTicketTest(TempDirTestCase):
         fake = FakeJira(fail_link_for={"SEC-1"})
         self._with_jira(fake)
 
-        out = io.StringIO()
-        with redirect_stdout(out):
+        with self.assertLogs(jira_agent.logger, level="WARNING") as logs:
             result = jira_agent.link_pr_to_ticket("SEC-1", self.PR, "s")
 
         self.assertFalse(result)
         self.assertEqual(len(fake.comments), 1)
-        self.assertIn("RuntimeError", out.getvalue())
-        self.assertNotIn("SECRETPASS", out.getvalue())
+        self.assertIn("RuntimeError", "\n".join(logs.output))
+        self.assertNotIn("SECRETPASS", "\n".join(logs.output))
 
     def test_comment_failure_returns_false_but_link_was_added(self):
         fake = FakeJira(fail_comment_for={"SEC-1"})

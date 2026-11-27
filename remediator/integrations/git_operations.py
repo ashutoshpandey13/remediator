@@ -1,7 +1,9 @@
 import base64
 import glob
 import json
+import logging
 import re
+import shutil
 import subprocess
 import os
 import time
@@ -11,6 +13,8 @@ from typing import List, Optional
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 # Allow-list of git URL forms: https://host/path, ssh://[user@]host/path, user@host:path.
 # No whitespace or control characters, and the first character can never be '-'
@@ -22,6 +26,7 @@ _REPO_URL_PATTERNS = (
 )
 _MAX_REPO_URL_LENGTH = 2048
 _CLONE_TIMEOUT_SECONDS = 600
+_GIT_LOCAL_TIMEOUT_SECONDS = 60
 
 # Remediation branch names are generated, but are checked before they reach git or the GitHub API
 _BRANCH_NAME_PATTERN = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._/-]{0,99}\Z')
@@ -101,7 +106,8 @@ def _github_auth_env(repo_path: str, token: Optional[str]) -> dict:
         ["git", "remote", "get-url", "origin"],
         cwd=repo_path,
         capture_output=True,
-        text=True
+        text=True,
+        timeout=_GIT_LOCAL_TIMEOUT_SECONDS
     )
     if remote.returncode != 0 or not re.match(r'^https://(?:[^@/\s]+@)?github\.com(?::\d+)?/', remote.stdout.strip(), re.I):
         return env
@@ -160,11 +166,10 @@ def clone_repository(repo_url: str, target_dir: str = "cloned_repo") -> str:
     repo_url = validate_repo_url(repo_url)
 
     # Remove existing directory if it exists
-    if os.path.exists(target_dir):
-        subprocess.run(
-            ["rm", "-rf", target_dir],
-            check=True
-        )
+    if os.path.islink(target_dir):
+        os.unlink(target_dir)
+    elif os.path.exists(target_dir):
+        shutil.rmtree(target_dir)
     
     # Clone repository. '--' stops git from reading the URL or directory as an option,
     # and a missing credential must fail instead of waiting for a prompt.
@@ -201,7 +206,8 @@ def get_default_branch(repo_path: str) -> str:
         ["git", "symbolic-ref", "--short", "refs/remotes/origin/HEAD"],
         cwd=repo_path,
         capture_output=True,
-        text=True
+        text=True,
+        timeout=_GIT_LOCAL_TIMEOUT_SECONDS
     )
     if result.returncode == 0 and result.stdout.strip().startswith("origin/"):
         return result.stdout.strip()[len("origin/"):]
@@ -211,7 +217,8 @@ def get_default_branch(repo_path: str) -> str:
         ["git", "rev-parse", "--abbrev-ref", "HEAD"],
         cwd=repo_path,
         capture_output=True,
-        text=True
+        text=True,
+        timeout=_GIT_LOCAL_TIMEOUT_SECONDS
     )
     if result.returncode != 0 or not result.stdout.strip():
         raise Exception("Could not determine the default branch")
@@ -239,14 +246,14 @@ def cleanup_cloned_repo(target_dir: str = "cloned_repo"):
     Args:
         target_dir: Directory to remove
     """
-    import shutil
-    
-    if os.path.exists(target_dir):
+    if os.path.islink(target_dir):
+        os.unlink(target_dir)
+    elif os.path.exists(target_dir):
         try:
             shutil.rmtree(target_dir)
-            print(f"✓ Cleaned up {target_dir}")
-        except Exception as e:
-            print(f"Warning: Could not clean up {target_dir}: {e}")
+            logger.info("Cleaned up %s", target_dir)
+        except OSError as e:
+            logger.warning("Could not clean up %s: %s", target_dir, type(e).__name__)
 
 
 
@@ -263,7 +270,8 @@ def create_branch(repo_path: str, branch_name: str = "security-remediation"):
         ["git", "checkout", "-b", branch_name],
         cwd=repo_path,
         capture_output=True,
-        text=True
+        text=True,
+        timeout=_GIT_LOCAL_TIMEOUT_SECONDS
     )
     
     if result.returncode != 0:
@@ -289,7 +297,8 @@ def commit_changes(
         subprocess.run(
             ["git", "add", "."],
             cwd=repo_path,
-            check=True
+            check=True,
+            timeout=_GIT_LOCAL_TIMEOUT_SECONDS
         )
         pathspec = []
     else:
@@ -304,31 +313,26 @@ def commit_changes(
             ["git", "add", "--", *paths],
             cwd=repo_path,
             capture_output=True,
-            text=True
+            text=True,
+            timeout=_GIT_LOCAL_TIMEOUT_SECONDS
         )
         if result.returncode != 0:
             raise Exception(f"Staging failed: {result.stderr}")
         pathspec = ["--", *paths]
     
-    # Configure git user if not set
-    subprocess.run(
-        ["git", "config", "user.email", "audesec-bot@example.com"],
-        cwd=repo_path,
-        capture_output=True
-    )
-    
-    subprocess.run(
-        ["git", "config", "user.name", "AudeSec Bot"],
-        cwd=repo_path,
-        capture_output=True
-    )
+    # The commit identity is passed per command (nothing is written to the git config).
+    # Override it with GIT_AUTHOR_NAME / GIT_AUTHOR_EMAIL.
+    author_name = os.getenv("GIT_AUTHOR_NAME", "AudeSec Bot")
+    author_email = os.getenv("GIT_AUTHOR_EMAIL", "audesec-bot@users.noreply.github.com")
     
     # Commit changes (only the given paths when a list was passed)
     result = subprocess.run(
-        ["git", "commit", "-m", message, *pathspec],
+        ["git", "-c", f"user.name={author_name}", "-c", f"user.email={author_email}",
+         "commit", "-m", message, *pathspec],
         cwd=repo_path,
         capture_output=True,
-        text=True
+        text=True,
+        timeout=_GIT_LOCAL_TIMEOUT_SECONDS
     )
     
     if result.returncode != 0:
@@ -517,130 +521,13 @@ def merge_pull_request(
     status, result = _github_api("PUT", f"/repos/{repo_path}/pulls/{pr_number}/merge", token,
                                  {"merge_method": merge_method})
     if status == 200 and result.get("merged"):
-        print(f"✓ PR #{pr_number} merged successfully")
+        logger.info("PR #%s merged successfully", pr_number)
         return True
     if status in (405, 409):
         # Not mergeable yet: required checks pending, conflicts, or the head changed
-        print(f"⚠ PR #{pr_number} is not mergeable yet: {_github_error(result, token)}")
+        logger.warning("PR #%s is not mergeable yet: %s", pr_number, _github_error(result, token))
         return False
     raise Exception(f"PR merge failed ({status}): {_github_error(result, token)}")
-
-
-def pull_latest_changes(repo_path: str, branch: str = "main"):
-    """
-    Pull latest changes from remote repository.
-    
-    Args:
-        repo_path: Path to local repository
-        branch: Branch to pull from (default: main)
-    """
-    # Checkout main/master branch
-    subprocess.run(
-        ["git", "checkout", branch],
-        cwd=repo_path,
-        capture_output=True,
-        check=False  # Don't fail if branch doesn't exist
-    )
-    
-    # Try master if main doesn't exist
-    if branch == "main":
-        result = subprocess.run(
-            ["git", "rev-parse", "--verify", "main"],
-            cwd=repo_path,
-            capture_output=True
-        )
-        if result.returncode != 0:
-            branch = "master"
-            subprocess.run(
-                ["git", "checkout", branch],
-                cwd=repo_path,
-                check=True
-            )
-    
-    # Pull latest changes
-    result = subprocess.run(
-        ["git", "pull", "origin", branch],
-        cwd=repo_path,
-        capture_output=True,
-        text=True
-    )
-    
-    if result.returncode != 0:
-        raise Exception(f"Git pull failed: {result.stderr}")
-    
-    print(f"✓ Pulled latest changes from {branch}")
-    return branch
-
-
-def generate_pr_body(
-    original_cves: int,
-    fixed_cves: int,
-    original_misconfigs: int,
-    fixed_misconfigs: int,
-    findings_summary: list
-) -> str:
-    """
-    Generate a detailed PR description.
-    
-    Args:
-        original_cves: Number of CVEs before remediation
-        fixed_cves: Number of CVEs after remediation
-        original_misconfigs: Number of misconfigurations before
-        fixed_misconfigs: Number of misconfigurations after
-        findings_summary: List of critical findings addressed
-        
-    Returns:
-        Formatted PR body
-    """
-    cve_improvement = original_cves - fixed_cves
-    misconfig_improvement = original_misconfigs - fixed_misconfigs
-    
-    body = f"""## 🔒 Automated Security Remediation
-
-This PR contains automated security fixes generated by AudeSec-POC.
-
-### 📊 Security Improvements
-
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| CVEs | {original_cves} | {fixed_cves} | ✅ {cve_improvement} fixed |
-| Misconfigurations | {original_misconfigs} | {fixed_misconfigs} | ✅ {misconfig_improvement} fixed |
-
-### 🎯 Critical Issues Addressed
-
-"""
-    
-    for i, finding in enumerate(findings_summary[:10], 1):
-        severity = finding.get("severity", "UNKNOWN")
-        finding_id = finding.get("id", "N/A")
-        finding_type = finding.get("type", "UNKNOWN")
-        
-        body += f"{i}. **[{severity}]** {finding_type}: `{finding_id}`\n"
-    
-    if len(findings_summary) > 10:
-        body += f"\n_...and {len(findings_summary) - 10} more issues_\n"
-    
-    body += """
-### 🔧 Changes Made
-
-- ✅ Updated vulnerable dependencies to secure versions
-- ✅ Fixed Kubernetes security misconfigurations
-- ✅ Applied security best practices
-- ✅ Validated all changes
-
-### ⚠️ Review Checklist
-
-- [ ] Review dependency version changes
-- [ ] Verify Kubernetes configuration changes
-- [ ] Test application functionality
-- [ ] Check for breaking changes
-
-### 🤖 Automated by AudeSec-POC
-
-This PR was automatically generated. Please review carefully before merging.
-"""
-    
-    return body
 
 
 _METRIC_LABELS = (

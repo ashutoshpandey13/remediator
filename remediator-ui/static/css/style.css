@@ -582,3 +582,27 @@ header h1 {
 .link-failed {
     color: #dc3545;
 }
+
+/* Inline styles moved here so the page works under a strict Content-Security-Policy */
+.hidden {
+    display: none !important;
+}
+
+.header-icons {
+    margin-top: 20px;
+    font-size: 2rem;
+    opacity: 0.7;
+}
+
+.advisory-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 320px;
+    overflow: auto;
+    padding: 12px 14px;
+    margin-top: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.9rem;
+}

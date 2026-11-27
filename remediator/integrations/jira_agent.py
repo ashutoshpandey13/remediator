@@ -1,11 +1,15 @@
 from jira import JIRA
 from dotenv import load_dotenv
 
+import logging
 import os
 import re
 from urllib.parse import urlparse
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
+JIRA_TIMEOUT_SECONDS = 30
 
 # Initialize JIRA client only if credentials are provided
 jira = None
@@ -17,14 +21,16 @@ if jira_url and jira_email and jira_token:
     try:
         jira = JIRA(
             server=jira_url,
-            basic_auth=(jira_email, jira_token)
+            basic_auth=(jira_email, jira_token),
+            timeout=JIRA_TIMEOUT_SECONDS,
+            max_retries=1
         )
-        print("✓ JIRA integration enabled")
+        logger.info("JIRA integration enabled")
     except Exception as e:
-        print(f"⚠ JIRA integration failed: {type(e).__name__}")
+        logger.warning("JIRA integration failed: %s", type(e).__name__)
         jira = None
 else:
-    print("ℹ JIRA integration disabled (credentials not provided)")
+    logger.info("JIRA integration disabled (credentials not provided)")
 
 
 # JIRA issue key, e.g. SEC-12
@@ -133,7 +139,7 @@ def create_jira_ticket(finding, repo_url=None):
 
         return issue.key
     except Exception as e:
-        print(f"Error creating JIRA ticket: {_safe_error(e)}")
+        logger.warning("Error creating JIRA ticket: %s", _safe_error(e))
         return None
 
 
@@ -147,10 +153,10 @@ def link_pr_to_ticket(key, pr_url, summary):
         return False
 
     if not isinstance(key, str) or not _ISSUE_KEY.match(key):
-        print("Cannot link PR: invalid JIRA ticket key")
+        logger.warning("Cannot link PR: invalid JIRA ticket key")
         return False
     if not _is_valid_pr_url(pr_url):
-        print(f"Cannot link PR to {key}: invalid pull request URL")
+        logger.warning("Cannot link PR to %s: invalid pull request URL", key)
         return False
 
     ok = True
@@ -160,14 +166,14 @@ def link_pr_to_ticket(key, pr_url, summary):
             {"url": pr_url, "title": "Security remediation pull request"}
         )
     except Exception as e:
-        print(f"Error adding PR link to {key}: {_safe_error(e)}")
+        logger.warning("Error adding PR link to %s: %s", key, _safe_error(e))
         ok = False
 
     try:
         text = _CONTROL_CHARS.sub("", str(summary or "")).strip()[:MAX_COMMENT_LENGTH]
         jira.add_comment(key, f"{text}\n\nPull request: {pr_url}".strip())
     except Exception as e:
-        print(f"Error adding PR comment to {key}: {_safe_error(e)}")
+        logger.warning("Error adding PR comment to %s: %s", key, _safe_error(e))
         ok = False
 
     return ok

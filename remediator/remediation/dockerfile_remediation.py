@@ -197,31 +197,3 @@ def _dockerfile_from_reply(reply: str) -> str:
     return use_anonymous_ubi_registry('\n'.join(cleaned_lines).strip())
 
 
-def update_dockerfile(dockerfile_path: str, cve_findings: list) -> bool:
-    """
-    Update Dockerfile with secure base image.
-    
-    Args:
-        dockerfile_path: Path to Dockerfile
-        cve_findings: List of CVE findings
-        
-    Returns:
-        True if updated successfully
-    """
-    try:
-        # Read current Dockerfile
-        with open(dockerfile_path, 'r') as f:
-            original_content = f.read()
-        
-        # Generate remediation
-        fixed_content = generate_dockerfile_remediation(original_content, cve_findings)
-        
-        # Write fixed Dockerfile
-        with open(dockerfile_path, 'w') as f:
-            f.write(fixed_content)
-        
-        return True
-        
-    except Exception as e:
-        print(f"Error updating Dockerfile: {e}")
-        return False

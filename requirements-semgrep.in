@@ -1,0 +1,13 @@
+# Semgrep (SAST) runs as a separate command-line tool in its own virtual environment,
+# so its dependencies never load inside the web app. requirements-semgrep.txt is generated:
+#   pip-compile --generate-hashes --allow-unsafe --strip-extras requirements-semgrep.in
+semgrep>=1.100
+#
+# Known advisories in semgrep's own pinned dependencies (semgrep 1.187.0 pins them exactly;
+# re-check when a newer semgrep is released):
+#   mcp 1.29.0 (CVE-2026-59951 and others)    - only reachable through "semgrep mcp", which the app never runs
+#   opentelemetry-api 1.37.0 (CVE-2026-114603, CVE-2026-126360) - parses inbound trace headers; the app runs
+#                                                semgrep as a short-lived CLI that receives none, and metrics are off
+#   wcmatch 8.5.2 (CVE-2026-132276)           - ReDoS on crafted file names in ignore-pattern matching; a scanned
+#                                                repository could trigger it, but the scan is killed after
+#                                                SEMGREP_TIMEOUT_SECONDS (600), so the cost is bounded

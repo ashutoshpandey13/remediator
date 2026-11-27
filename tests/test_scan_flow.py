@@ -113,6 +113,7 @@ class ScanFlowTest(TempDirTestCase):
         stubs = {
             "ensure_bob_configured": lambda: None,
             "cleanup_stale_clones": lambda *a, **k: None,
+            "remove_stale_images": lambda: None,
             "clone_repository": self._fake_clone,
             "scan_k8s_config": self._fake_scan_k8s,
             "summarize_findings": self._fake_k8s_summary,
@@ -295,20 +296,48 @@ class ScanFlowTest(TempDirTestCase):
         self._assert_no_leftovers(result)
         self.assertEqual(len(self.cspm_scanned), 1)
         self.assertTrue(os.path.basename(self.cspm_scanned[0]).startswith("security-remediation-clone-"))
-        self.assertEqual(result["metrics"]["advisory"], {"cspm": 1})
+        self.assertEqual(result["metrics"]["advisory"], {"cspm": 1, "runtime": 0, "network": 0})
         self.assertEqual([f["file"] for f in advisory.call_args[0][0]], ["infra/main.tf"])
         self.assertNotIn("infra/main.tf", result["files_updated"])
         self.assertEqual(self._step(result, web_app.STEP_CSPM)["status"], "success")
 
-    def test_runtime_and_network_are_reported_as_not_applicable(self):
-        _, result = self._run()
+    def test_runtime_and_network_are_skipped_when_no_feed_is_configured(self):
+        env = {name: "" for name in ("CSPM_FINDINGS_PATH", "RUNTIME_FINDINGS_PATH", "NETWORK_FINDINGS_PATH")}
+        with mock.patch.dict(os.environ, env):
+            _, result = self._run()
 
         self._assert_no_leftovers(result)
         for step in (web_app.STEP_RUNTIME, web_app.STEP_NETWORK):
             progress = self._step(result, step)
             self.assertEqual(progress["status"], "info")
-            self.assertIn("not applicable", progress["message"])
-        self.assertEqual(result["metrics"]["advisory"], {"cspm": 0})
+            self.assertIn("is not set", progress["message"])
+        self.assertEqual(result["metrics"]["advisory"], {"cspm": 0, "runtime": 0, "network": 0})
+
+    def test_findings_feeds_are_scanned_and_get_advisory(self):
+        feeds = {
+            "CSPM_FINDINGS_PATH": [{"CheckID": "S3_PUBLIC_ACCESS", "Severity": "CRITICAL",
+                                    "Resource": "bucket", "Description": "public"}],
+            "RUNTIME_FINDINGS_PATH": [{"rule": "Terminal shell in container", "priority": "HIGH",
+                                       "output": "shell"}],
+            "NETWORK_FINDINGS_PATH": [{"id": "KHV001", "severity": "HIGH", "description": "dashboard"}],
+        }
+        env = {}
+        for name, payload in feeds.items():
+            path = os.path.join(self.tmp, name.lower() + ".json")
+            with open(path, "w") as f:
+                json.dump(payload, f)
+            env[name] = path
+
+        with mock.patch.dict(os.environ, env), \
+                mock.patch.object(web_app, "generate_advisory", return_value="- **x**: fix") as advisory:
+            _, result = self._run()
+
+        self._assert_no_leftovers(result)
+        self.assertEqual(result["metrics"]["advisory"], {"cspm": 1, "runtime": 1, "network": 1})
+        self.assertEqual({f["type"] for f in advisory.call_args[0][0]}, {"CSPM", "RUNTIME", "NETWORK"})
+        self.assertEqual(result["advisory"], "- **x**: fix")
+        for step in (web_app.STEP_CSPM, web_app.STEP_RUNTIME, web_app.STEP_NETWORK):
+            self.assertEqual(self._step(result, step)["status"], "success")
 
     def test_nested_and_multiple_assets_are_all_handled(self):
         files = {

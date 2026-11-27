@@ -7,6 +7,9 @@ import subprocess
 
 load_dotenv()
 
+# One AI call must never block a scan forever
+BOB_TIMEOUT_SECONDS = int(os.getenv("BOB_TIMEOUT_SECONDS", "600"))
+
 
 def extract_code_block(text: str) -> str:
     """
@@ -42,7 +45,8 @@ def call_bob(prompt: str) -> str:
         ],
         input=prompt,
         capture_output=True,
-        text=True
+        text=True,
+        timeout=BOB_TIMEOUT_SECONDS
     )
 
     if result.returncode != 0:

@@ -171,8 +171,7 @@ def clean_yaml(yaml_content: str) -> str:
     """Clean YAML content by removing comments and invalid syntax."""
     lines = yaml_content.split('\n')
     cleaned_lines = []
-    in_string = False
-    
+
     for line in lines:
         # Skip empty lines at start
         if not cleaned_lines and not line.strip():

@@ -1,9 +1,12 @@
 import json
+import logging
 import shutil
 import subprocess
 import yaml
 
 NODE_CHECK_TIMEOUT_SECONDS = 30
+
+logger = logging.getLogger(__name__)
 
 
 def validate_yaml(file_path):
@@ -18,9 +21,7 @@ def validate_yaml(file_path):
 
     except Exception as e:
 
-        print(
-            f"YAML validation failed: {e}"
-        )
+        logger.warning("YAML validation failed: %s", type(e).__name__)
 
         return False
 
@@ -36,9 +37,7 @@ def validate_package_json(file_path):
 
     except Exception as e:
 
-        print(
-            f"Package JSON validation failed: {e}"
-        )
+        logger.warning("Package JSON validation failed: %s", type(e).__name__)
 
         return False
 
@@ -81,8 +80,6 @@ def validate_source_file(file_path):
 
     except Exception as e:
 
-        print(
-            f"Source validation failed for {file_path}: {e}"
-        )
+        logger.warning("Source validation failed for %s: %s", file_path, type(e).__name__)
 
         return False

@@ -6,7 +6,6 @@ from tests.helpers import K8S_POD, TempDirTestCase, write
 from remediator.config import (
     MAX_MANIFEST_BYTES,
     discover_repo_files,
-    find_files_in_repo,
     get_repository_config,
     is_k8s_manifest,
 )
@@ -96,17 +95,6 @@ class DiscoverRepoFilesTest(TempDirTestCase):
     def test_oversized_file_is_not_a_manifest(self):
         path = write(self.tmp, "big.yaml", K8S_POD + "# " + "x" * MAX_MANIFEST_BYTES + "\n")
         self.assertFalse(is_k8s_manifest(path))
-
-    def test_find_files_in_repo_returns_first_absolute_paths(self):
-        write(self.tmp, "b/Dockerfile", "FROM scratch\n")
-        write(self.tmp, "a/Dockerfile", "FROM scratch\n")
-        write(self.tmp, "k/d.yaml", K8S_POD)
-
-        found = find_files_in_repo(self.tmp)
-
-        self.assertEqual(found["dockerfile"], os.path.join(self.tmp, "a/Dockerfile"))
-        self.assertEqual(found["deployment_yaml"], os.path.join(self.tmp, "k/d.yaml"))
-        self.assertIsNone(found["package_json"])
 
 
 class RepositoryConfigTest(TempDirTestCase):

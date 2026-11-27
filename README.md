@@ -26,11 +26,11 @@ The results page shows the PR link, the JIRA keys (as links when `JIRA_URL` is h
 
 | Tool | Used for |
 |------|----------|
-| Python 3.8+ | the app (`pip install -r requirements.txt`) |
+| Python 3.10+ (3.12 in the image) | the app (`pip install -r requirements.txt`) |
 | Git | clone, branch, commit, push |
 | Docker | building the repo's Dockerfiles for the CVE scan |
 | Trivy | Kubernetes misconfigurations and image CVEs |
-| Semgrep | SAST (installed by `requirements.txt`) |
+| Semgrep | SAST (`pip install -r requirements-semgrep.txt`, ideally in its own virtual environment) |
 | Gitleaks | secret scanning (installed separately) |
 | Bob CLI (`bob`) | AI remediation |
 | Node.js / npm | validating remediated `package.json` dependencies (optional) |
@@ -50,7 +50,16 @@ Put these in a `.env` file in the project root (it is loaded at startup), or pas
 | `JIRA_URL` | optional | Must be `https://...` for ticket links in the UI. |
 | `JIRA_EMAIL`, `JIRA_API_TOKEN` | optional | JIRA credentials (all three `JIRA_*` values are needed to enable JIRA). |
 | `JIRA_PROJECT` | optional | Project key for new tickets (default `SEC`). |
-| `HOST`, `PORT` | optional | Bind address (default `127.0.0.1`) and port (default `8000`). |
+| `CSPM_FINDINGS_PATH`, `RUNTIME_FINDINGS_PATH`, `NETWORK_FINDINGS_PATH` | optional | JSON findings exports from cloud / runtime / network tools (examples in `sample_data/`). |
+| `AUDESEC_ACCESS_TOKEN` | required unless `HOST` is loopback | Shared token (at least 24 characters) that every `/api/` request must send as `Authorization: Bearer <token>`; the UI asks for it. Generate one with `python -c "import secrets; print(secrets.token_urlsafe(32))"`. |
+| `HOST`, `PORT` | optional | Bind address (default `127.0.0.1`) and port (default `8000`). `0.0.0.0` / `::` are refused, and any non-loopback `HOST` requires `AUDESEC_ACCESS_TOKEN`. |
+| `ALLOWED_HOSTS` | optional | Comma-separated extra `Host` names accepted (for a reverse proxy). Other `Host` / `Origin` values get HTTP 403 (DNS-rebinding defence). |
+| `MAX_CONCURRENT_SCANS` | optional | Scans running at once (default `2`); more get HTTP 429. |
+| `SCAN_RETENTION_SECONDS` | optional | How long finished scan results stay in memory (default 24 h). |
+| `WEB_THREADS` | optional | Server threads (default `8`). |
+| `BOB_TIMEOUT_SECONDS`, `DOCKER_BUILD_TIMEOUT_SECONDS` | optional | Time limits for one Bob call (default 600) and one `docker build` (default 1200). |
+| `GIT_AUTHOR_NAME`, `GIT_AUTHOR_EMAIL` | optional | Identity on the remediation commit (default `audesec-bot`). |
+| `PRUNE_BUILD_CACHE` | optional | `true` (default): after each scan, also prune unused Docker build cache. Set `false` on a shared Docker host if you want to keep other projects' cache. |
 | `LOG_LEVEL` | optional | Python log level (default `INFO`). |
 
 The token is passed to git only through the process environment (scoped to `github.com`) and to the GitHub API in an `Authorization` header over HTTPS (redirects are not followed). It is never written into a remote URL, `.git/config`, command-line arguments, logs or the UI.
@@ -63,26 +72,36 @@ The token is passed to git only through the process environment (scoped to `gith
 | Container image CVEs | Trivy | one image per Dockerfile found |
 | SAST (code vulnerabilities) | Semgrep | repo source code |
 | Secrets | Gitleaks | repo source code (values are redacted) |
-| Cloud posture (CSPM) | Trivy | the repo's infrastructure-as-code: Terraform, CloudFormation, Helm, Azure ARM, ... |
+| Cloud posture (CSPM) | Trivy, plus an optional JSON export | the repo's infrastructure-as-code (Terraform, CloudFormation, Helm, Azure ARM, ...), plus the file named by `CSPM_FINDINGS_PATH` (e.g. Prowler) |
+| Runtime security | JSON export (Falco, ...) | the file named by `RUNTIME_FINDINGS_PATH` |
+| Network exposure | JSON export (kube-hunter, ...) | the file named by `NETWORK_FINDINGS_PATH` |
 
-SAST and secret findings are fixed in the cloned source. Cloud posture findings are reported with AI recommendations in `reports/advisory.md` and are not changed automatically.
+SAST and secret findings are fixed in the cloned source. Cloud posture findings are reported with AI recommendations in the results page (`advisory` in `/api/scan/<id>`) and are not changed automatically.
 
-Runtime security and live network exposure describe a running cluster or cloud account, not a repository, so those two steps are shown as *not applicable* in a repository scan.
+Runtime and network findings describe a running cluster, not a repository, so they come from exports of your own tools (formats in `sample_data/`). When a `*_FINDINGS_PATH` variable is unset or points to a missing file, that step is shown as skipped. These findings, like cloud posture ones, get AI recommendations in the results page and are not applied to the repo automatically.
 
 ## 🚀 How to Run
 
 ### Local
 
 ```bash
-python3 -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
+python3.12 -m venv venv && source venv/bin/activate     # Python 3.10+ is required
+pip install --require-hashes -r requirements.txt
+python3.12 -m venv venv-semgrep && venv-semgrep/bin/pip install --require-hashes -r requirements-semgrep.txt
+export PATH="$PWD/venv-semgrep/bin:$PATH"                # so the app finds `semgrep`
 
 # create .env with the variables above, then:
-HOST=127.0.0.1 python -m remediator.web.app
+python -m remediator.web.app
 # open http://127.0.0.1:8000
 ```
 
 The startup log lists which settings are set (names only, never values).
+
+**Helper script:** `scripts/start_web_ui.sh` checks `.env`, the venv, Docker and the scanner tools, then starts the server.
+
+**Command line:** the same workflow without the browser: `python -m remediator.cli https://github.com/owner/repo.git` (prints the PR URL and JIRA keys; the exit code is non-zero on failure).
+
+**Dependencies:** `requirements.in` / `requirements-semgrep.in` list the direct packages; `requirements.txt` / `requirements-semgrep.txt` are the hash-locked results. Regenerate them (Python 3.12) with `pip-compile --generate-hashes --allow-unsafe -o requirements.txt requirements.in` (and the same for the semgrep pair), then audit with `pip-audit -r requirements.txt`. Semgrep pins `mcp`, `opentelemetry-api` and `wcmatch` to versions that have published advisories; they run only inside the separate semgrep environment, never in the web app.
 
 ### Docker
 
@@ -91,15 +110,15 @@ docker build -t audesec-platform .
 docker run -d --name audesec \
   -p 127.0.0.1:8000:8000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v "$(pwd)/reports:/app/reports" \
+  --group-add "$(stat -c %g /var/run/docker.sock)" \
   --env-file .env \
   audesec-platform
 # open http://127.0.0.1:8000
 ```
 
-The image build copies `.env*` when it exists, so never publish an image that was built next to a filled-in `.env`.
+`.env` is excluded from the build context (`.dockerignore`), so secrets never end up in an image layer; they come only from `--env-file`. On macOS with Docker Desktop or Colima, replace the `--group-add` value with the group id of the socket inside the VM (`docker run --rm -v /var/run/docker.sock:/s alpine stat -c %g /s`).
 
-The image build verifies every tool (`git`, `docker`, `trivy`, `gitleaks`, `semgrep`, `node`, `npm`, `bob`). Inside the container the app binds to the container's own address (not `0.0.0.0`) unless you set `HOST`, so the published port is reachable; keep it published on `127.0.0.1` as above. `BOB_API_KEY` and the other settings come from `--env-file`. The container needs the Docker socket to build the target repo's Dockerfiles, which gives it control of the host's Docker, so only run it on a machine you trust. It runs as root; the `audesec` user in the image is not used because of the socket.
+The image is based on Red Hat UBI 9 (`ubi9/python-312-minimal`), runs as the non-root user `1001`, and the build verifies every tool (`git`, `docker`, `trivy`, `gitleaks`, `semgrep`, `node`, `npm`, `bob`). Tool downloads are pinned and checksum-verified, and Python packages are installed with `--require-hashes`. Inside the container the app binds to the container's own address (never `0.0.0.0`) unless you set `HOST`; because that is not a loopback address, **`AUDESEC_ACCESS_TOKEN` must be set** (put it in `.env`). Keep the port published on `127.0.0.1` as above. `GET /healthz` is the health check. The container needs the Docker socket to build the target repo's Dockerfiles, which gives it control of the host's Docker, so only run it on a machine you trust.
 
 ### Using the web UI
 
@@ -161,22 +180,30 @@ These need real accounts and tools, so run them yourself. Use a throw-away GitHu
 ```
 audesec-poc/
 ├── remediator/                 # Python package (all application code)
+│   ├── cli.py                  # Command-line entry point (python -m remediator.cli)
 │   ├── config.py               # Configuration and file discovery
 │   ├── findings.py             # Findings normalization
 │   ├── logger.py               # Activity logging
-│   ├── scanners/               # Trivy (K8s, images, IaC), Semgrep, Gitleaks
+│   ├── scanners/               # Trivy (K8s, images, IaC), Semgrep, Gitleaks, JSON feeds (cloud, runtime, network)
 │   ├── remediation/            # AI fixing (Bob client; K8s, package.json, Dockerfile, source)
 │   ├── validation/             # Checks on fixed files
 │   ├── integrations/
 │   │   ├── git_operations.py   #   clone, branch, commit, push, PR (GitHub REST API), PR body
 │   │   └── jira_agent.py       #   JIRA tickets and PR links
-│   └── web/app.py              # Flask + Socket.IO backend (python -m remediator.web.app)
-├── remediator-ui/              # Frontend (served by the Flask backend)
+│   └── web/
+│       ├── app.py              #   Flask backend, served by waitress (python -m remediator.web.app)
+│       ├── security.py         #   access token, Host/Origin check, security headers
+│       └── store.py            #   thread-safe scan state with retention and a concurrency cap
+├── remediator-ui/              # Frontend (served by the Flask backend; no inline scripts)
+├── scripts/start_web_ui.sh     # Environment check + start
+├── sample_data/                # Example CSPM / runtime / network JSON exports
 ├── tests/                      # Offline unit tests
-├── requirements.txt            # Python dependencies
+├── requirements.in             # Direct dependencies of the app
+├── requirements.txt            # Hash-locked app dependencies
+├── requirements-semgrep.in     # Semgrep (installed in its own environment)
+├── requirements-semgrep.txt    # Hash-locked Semgrep dependencies
 ├── Dockerfile
 ├── .env                        # Your settings and secrets (create it; never commit)
-├── reports/                    # Scan reports (generated)
 └── security-remediation-clone-*/   # Per-scan clones (generated, removed after each scan)
 ```
 
@@ -184,7 +211,8 @@ audesec-poc/
 
 - Never commit `.env`; rotate tokens regularly.
 - Give `GITHUB_TOKEN` the minimum scope: write access to the repositories you scan, nothing else.
-- Keep the UI bound to `127.0.0.1` unless you put it behind authentication.
+- Keep the UI bound to `127.0.0.1`. Anything reachable from other machines must set `AUDESEC_ACCESS_TOKEN` (enforced at startup) and sit behind TLS (a reverse proxy; add its name to `ALLOWED_HOSTS`).
+- The API rejects unknown `Host` / `Origin` headers, sends a strict Content-Security-Policy, and returns generic error messages (details only in the server log).
 - Always review AI-generated PRs and test them before merging.
 
 ## 🐳 Docker Management Commands

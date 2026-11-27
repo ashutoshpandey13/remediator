@@ -6,8 +6,29 @@ const scanProgress = document.getElementById('scanProgress');
 const scanResults = document.getElementById('scanResults');
 const currentScanIdSpan = document.getElementById('currentScanId');
 
+const accessTokenInput = document.getElementById('accessToken');
+
 let currentScanId = null;
 let pollInterval = null;
+
+function show(el, visible = true) {
+    el.classList.toggle('hidden', !visible);
+}
+
+// The access token lives in this tab only (never stored)
+function authHeaders() {
+    const headers = {};
+    if (accessTokenInput && accessTokenInput.value) {
+        headers['Authorization'] = 'Bearer ' + accessTokenInput.value;
+    }
+    return headers;
+}
+
+function apiErrorMessage(response, data) {
+    if (response.status === 401) return 'The access token is missing or wrong.';
+    if (response.status === 429) return 'Too many scans are running. Try again in a few minutes.';
+    return (data && data.error) || 'Request failed (' + response.status + ').';
+}
 
 // Form submission
 scanForm.addEventListener('submit', async (e) => {
@@ -22,27 +43,28 @@ scanForm.addEventListener('submit', async (e) => {
     // Disable form
     startScanBtn.disabled = true;
     startScanBtn.querySelector('.btn-text').textContent = 'Starting...';
-    startScanBtn.querySelector('.btn-loader').style.display = 'inline-block';
+    show(startScanBtn.querySelector('.btn-loader'));
     
     try {
         // Start scan
         const response = await fetch('/api/scan', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...authHeaders()
             },
             body: JSON.stringify({ repo_url: repoUrl })
         });
         
-        const data = await response.json();
+        const data = await response.json().catch(() => ({}));
         
         if (response.ok) {
             currentScanId = data.scan_id;
             currentScanIdSpan.textContent = currentScanId;
             
             // Show progress section
-            scanProgress.style.display = 'block';
-            scanResults.style.display = 'none';
+            show(scanProgress);
+            show(scanResults, false);
             
             // Scroll to progress
             scanProgress.scrollIntoView({ behavior: 'smooth' });
@@ -53,7 +75,7 @@ scanForm.addEventListener('submit', async (e) => {
             // Start polling for updates
             startPolling();
         } else {
-            alert('Error: ' + data.error);
+            alert('Error: ' + apiErrorMessage(response, data));
             resetForm();
         }
     } catch (error) {
@@ -67,7 +89,15 @@ function startPolling() {
     // Poll every 2 seconds
     pollInterval = setInterval(async () => {
         try {
-            const response = await fetch(`/api/scan/${currentScanId}`);
+            const response = await fetch(`/api/scan/${encodeURIComponent(currentScanId)}`, {
+                headers: authHeaders()
+            });
+            if (!response.ok) {
+                clearInterval(pollInterval);
+                alert('Error: ' + apiErrorMessage(response, null));
+                resetForm();
+                return;
+            }
             const data = await response.json();
             
             if (data.steps && data.steps.length > 0) {
@@ -166,7 +196,9 @@ const METRIC_CARDS = [
 ];
 
 const ADVISORY_CARDS = [
-    { key: 'cspm', title: 'Cloud Posture (IaC)', icon: '☁️' }
+    { key: 'cspm', title: 'Cloud Posture', icon: '☁️' },
+    { key: 'runtime', title: 'Runtime Security', icon: '🏃' },
+    { key: 'network', title: 'Network Exposure', icon: '🌐' }
 ];
 
 function createEl(tag, className, text) {
@@ -336,8 +368,8 @@ function showDelivery(result) {
 
 function showResults(metrics, result) {
     // Hide progress, show results
-    scanProgress.style.display = 'none';
-    scanResults.style.display = 'block';
+    show(scanProgress, false);
+    show(scanResults);
 
     const grid = document.getElementById('metricsGrid');
     const advisorySection = document.getElementById('advisorySection');
@@ -345,7 +377,7 @@ function showResults(metrics, result) {
 
     grid.replaceChildren();
     advisoryGrid.replaceChildren();
-    advisorySection.style.display = 'none';
+    show(advisorySection, false);
 
     if (metrics) {
         // Scanners that could not run have no entry in metrics and are skipped
@@ -364,9 +396,12 @@ function showResults(metrics, result) {
                     advisoryGrid.appendChild(createAdvisoryCard(def, count));
                 }
             });
-            if (any) advisorySection.style.display = 'block';
+            if (any) show(advisorySection);
         }
     }
+
+    const advisoryText = document.getElementById('advisoryText');
+    advisoryText.textContent = (result && result.advisory) || '';
 
     showDelivery(result);
 
@@ -389,5 +424,8 @@ function resetSteps() {
 function resetForm() {
     startScanBtn.disabled = false;
     startScanBtn.querySelector('.btn-text').textContent = 'Start Scan';
-    startScanBtn.querySelector('.btn-loader').style.display = 'none';
+    show(startScanBtn.querySelector('.btn-loader'), false);
 }
+
+
+document.getElementById('newScanBtn').addEventListener('click', () => location.reload());
